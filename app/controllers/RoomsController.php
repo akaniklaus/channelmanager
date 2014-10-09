@@ -10,7 +10,7 @@ class RoomsController extends \BaseController
      */
     public function getIndex()
     {
-        $rooms = Room::all();
+        $rooms = Room::where('property_id', Property::getLoggedId())->get();
 
         return View::make('rooms.index', compact('rooms'));
     }
@@ -39,6 +39,7 @@ class RoomsController extends \BaseController
         if ($validator->fails()) {
             return Redirect::back()->withErrors($validator)->withInput();
         }
+        $data['property_id'] = Property::getLoggedId();
 
         Room::create($data);
 

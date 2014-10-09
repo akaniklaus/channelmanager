@@ -3,6 +3,17 @@
 class PropertiesController extends \BaseController
 {
 
+
+    /**
+     * Switch current property
+     * @var $id int
+     */
+    public function getSwitch()
+    {
+        Session::put(Property::PROPERTY_ID, \Illuminate\Support\Facades\Input::get('property_id'));
+        return Redirect::back();
+    }
+
     /**
      * Display a listing of properties
      *
@@ -20,7 +31,7 @@ class PropertiesController extends \BaseController
      *
      * @return Response
      */
-    public function create()
+    public function getCreate()
     {
         return View::make('properties.create');
     }
@@ -30,7 +41,7 @@ class PropertiesController extends \BaseController
      *
      * @return Response
      */
-    public function store()
+    public function postStore()
     {
         $validator = Validator::make($data = Input::all(), Property::$rules);
 
@@ -40,7 +51,7 @@ class PropertiesController extends \BaseController
 
         Property::create($data);
 
-        return Redirect::route('properties.index');
+        return Redirect::action('PropertiesController@getIndex');
     }
 
     /**
@@ -62,7 +73,7 @@ class PropertiesController extends \BaseController
      * @param  int $id
      * @return Response
      */
-    public function edit($id)
+    public function getEdit($id)
     {
         $property = Property::find($id);
 
@@ -75,7 +86,7 @@ class PropertiesController extends \BaseController
      * @param  int $id
      * @return Response
      */
-    public function update($id)
+    public function postUpdate($id)
     {
         $property = Property::findOrFail($id);
 
@@ -87,7 +98,7 @@ class PropertiesController extends \BaseController
 
         $property->update($data);
 
-        return Redirect::route('properties.index');
+        return Redirect::action('PropertiesController@getIndex');
     }
 
     /**
@@ -96,11 +107,11 @@ class PropertiesController extends \BaseController
      * @param  int $id
      * @return Response
      */
-    public function destroy($id)
+    public function getDestroy($id)
     {
         Property::destroy($id);
 
-        return Redirect::route('properties.index');
+        return Redirect::action('PropertiesController@getIndex');
     }
 
 }

@@ -11,9 +11,6 @@
 {{Form::text('rack_rate')}}
 {{$errors->first('rack_rate')}}
 <br>
-{{Form::label('property_id','Property')}}
-{{Form::select('property_id',$properties)}}
-{{$errors->first('property_id')}}
-<br>
 {{Form::submit('Add room')}}
+{{Form::close()}}
 @stop

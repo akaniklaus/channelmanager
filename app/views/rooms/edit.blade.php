@@ -15,4 +15,5 @@
 {{$room->property_id}}
 <br>
 {{Form::submit('Update room')}}
+{{Form::close()}}
 @stop
