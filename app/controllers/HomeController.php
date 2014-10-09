@@ -18,6 +18,16 @@ class HomeController extends BaseController
 
     public function showWelcome()
     {
-        return View::make('hello');
+        echo '123';
+
+//        return \Illuminate\Support\Facades\URL::action('HomeController@showWelcomeTwo');
+//        return View::make('hello');
+    }
+
+    public function getWelcomeTwo()
+    {
+        echo '321';
+//        return \Illuminate\Support\Facades\URL::action('HomeController@showWelcome');
+//        return View::make('hello');
     }
 }
