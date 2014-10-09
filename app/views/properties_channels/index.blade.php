@@ -19,6 +19,7 @@
         <td>{{$pc->channel()->name}}</td>
         <td>
         {{link_to_action('PropertiesChannelsController@getEdit','Edit',$pc->channel_id)}}
+        {{link_to_action('PropertiesChannelsController@getDestroy','Delete',$pc->channel_id)}}
         </td>
 
     </tr>

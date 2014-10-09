@@ -40,7 +40,7 @@ class PropertiesChannelsController extends \BaseController
             return Redirect::back()->withErrors($validator)->withInput();
         }
 
-        $data['property_id'] = 2;
+        $data['property_id'] = Property::getLoggedId();
         PropertiesChannel::create($data);
 
         return Redirect::action('PropertiesChannelsController@getIndex');
@@ -109,12 +109,17 @@ class PropertiesChannelsController extends \BaseController
     /**
      * Remove the specified propertieschannel from storage.
      *
-     * @param  int $id
+     * @param  int $channelId
      * @return Response
      */
-    public function getDestroy($id)
+    public function getDestroy($channelId)
     {
-        PropertiesChannel::destroy($id);
+        PropertiesChannel::where(
+            [
+                'channel_id' => $channelId,
+                'property_id' => Property::getLoggedId()
+            ]
+        )->delete();
 
         return Redirect::action('PropertiesChannelsController@getIndex');
     }
