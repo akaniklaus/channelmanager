@@ -1,0 +1,1 @@
+/home/alex/www/cm.kamer.ngrok.com/www/app/views/rooms/show.blade.php

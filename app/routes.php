@@ -11,5 +11,6 @@
 |
 */
 
-Route::get('/', 'HomeController@showWelcome');
+Route::get('/', 'HomeController@getIndex');
 Route::controller('properties', 'PropertiesController');
+Route::controller('rooms', 'RoomsController');
