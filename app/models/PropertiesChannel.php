@@ -30,4 +30,19 @@ class PropertiesChannel extends \Eloquent
         return $this->belongsTo('Channel', 'channel_id')->first();
     }
 
+    /**
+     * @param $channelId
+     * @param $propertyId
+     * @return \Illuminate\Database\Eloquent\Model|null|static
+     */
+    public static function getSettings($channelId, $propertyId)
+    {
+        return PropertiesChannel::where(
+            [
+                'channel_id' => $channelId,
+                'property_id' => $propertyId
+            ]
+        )->first();
+    }
+
 }

@@ -2,7 +2,7 @@
 @section('content')
 <h2>Common Rooms</h2>
 
-<table>
+<table class="table">
     <tr>
         <th>id</th>
         <th>name</th>
@@ -28,12 +28,11 @@
 
 @foreach ($channels as $channel)
 <h2>{{$channel->channel()->name}} Rooms</h2>
-    <table>
+    <table  class="table">
         <tr>
             <th>id</th>
             <th>name</th>
-            <th>rack rate</th>
-            <th>property</th>
+            <th>Mapped room</th>
             <th>actions</th>
         </tr>
     @foreach ($rooms as $room)
@@ -41,11 +40,8 @@
             <td>{{$room->id}}</td>
             <td>{{$room->name}}</td>
             <td></td>
-            <td></td>
             <td>
-            {{link_to_action('RoomsController@getEdit','Edit',$room->id)}}
-            | {{link_to_action('RoomsController@getDestroy','Delete',$room->id)}}
-
+            {{link_to_action('RoomsController@getMap','Map',[$room->id,$channel->channel()->id])}}
             </td>
         </tr>
     @endforeach

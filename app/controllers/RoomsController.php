@@ -75,6 +75,61 @@ class RoomsController extends \BaseController
     }
 
     /**
+     * Show the form for editing the specified room.
+     *
+     * @param int $id
+     * @param int $channelId
+     * @return Response
+     */
+    public function getMap($id, $channelId)
+    {
+        $room = Room::find($id);
+
+        $channelSettings = PropertiesChannel::getSettings($channelId, Property::getLoggedId());
+
+        $channel = ChannelFactory::create($channelId);
+        $channel->setHotelCode($channelSettings->hotel_code);
+        $result = $channel->getInventoryList();
+        $inventoryList = [];
+        foreach ($result as $inventory) {
+            $inventoryList[$inventory['id']] = $inventory['name'];
+        }
+
+        $inventoryPlans = [];
+        if ($inventory['plans']) {
+            foreach ($result as $inventory) {
+                foreach ($inventory['plans'] as $plan) {
+                    $inventoryPlans[$inventory['id']] = $plan;
+                }
+            }
+        }
+
+
+        return View::make('rooms.map', compact('room', 'channel', 'inventoryList', 'inventoryPlans'));
+    }
+
+    /**
+     * Update the specified room in storage.
+     *
+     * @param  int $id
+     * @return Response
+     */
+    public function postMap($id)
+    {
+        $room = Room::findOrFail($id);
+
+        $validator = Validator::make($data = Input::all(), Room::$rules);
+
+        if ($validator->fails()) {
+            return Redirect::back()->withErrors($validator)->withInput();
+        }
+
+        $room->update($data);
+
+        return Redirect::action('RoomsController@getIndex');
+    }
+
+    /**
      * Update the specified room in storage.
      *
      * @param  int $id

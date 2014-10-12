@@ -1,7 +1,7 @@
 @extends('layouts.properties_channels')
 
 @section('content')
-<table>
+<table  class="table">
 <tr>
 <th>login</th>
 <th>password</th>
