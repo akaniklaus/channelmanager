@@ -12,7 +12,9 @@ class RoomsController extends \BaseController
     {
         $rooms = Room::where('property_id', Property::getLoggedId())->get();
 
-        return View::make('rooms.index', compact('rooms'));
+        $channels = PropertiesChannel::where('property_id', Property::getLoggedId())->get();
+
+        return View::make('rooms.index', compact('rooms', 'channels'));
     }
 
     /**

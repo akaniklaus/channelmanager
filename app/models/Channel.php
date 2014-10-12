@@ -1,6 +1,16 @@
 <?php
 
+/**
+ * Channel
+ *
+ */
 class Channel extends \Eloquent
 {
-    protected $fillable = ['name'];
+    protected $fillable = ['id', 'name'];
+    /**
+     * Indicates if the IDs are auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
 }

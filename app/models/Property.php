@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Property
+ *
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Channel[] $channels
+ */
 class Property extends \Eloquent
 {
 

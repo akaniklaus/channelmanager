@@ -14,14 +14,13 @@ class CreateChannelsTable extends Migration
     public function up()
     {
         Schema::create('channels', function (Blueprint $table) {
-            $table->increments('id');
+            $table->integer('id');
             $table->string('name');
             $table->timestamps();
         });
-        Channel::create(['name' => 'Booking.com']);
-        Channel::create(['name' => 'Wotif.com']);
+        Channel::create(['id' => '1', 'name' => 'Booking.com']);
+        Channel::create(['id' => '2', 'name' => 'Wotif.com']);
     }
-
 
     /**
      * Reverse the migrations.

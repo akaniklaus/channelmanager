@@ -13,7 +13,7 @@ class AddExpediaChannel extends Migration
      */
     public function up()
     {
-        Channel::create(['name' => 'Expedia']);
+        Channel::create(['id' => '3', 'name' => 'Expedia']);
     }
 
     /**
@@ -23,7 +23,7 @@ class AddExpediaChannel extends Migration
      */
     public function down()
     {
-        Channel::where(['name' => 'Expedia'])->delete();
+        Channel::where(['id' => 3])->delete();
     }
 
 }

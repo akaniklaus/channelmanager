@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * PropertiesChannel
+ *
+ * @property-read \Channel $channel
+ */
 class PropertiesChannel extends \Eloquent
 {
 

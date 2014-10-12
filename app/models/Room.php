@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Room
+ *
+ */
 class Room extends \Eloquent
 {
 
