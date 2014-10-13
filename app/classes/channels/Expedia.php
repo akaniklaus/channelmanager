@@ -48,10 +48,12 @@ class Expedia extends BaseChannel implements IBaseChannel
                 'id' => (string)$one['id'],
                 'name' => (string)$one['name']
             ];
-            foreach ($one->RatePlan as $plans) {
+            foreach ($one->RatePlan as $plan) {
                 $inventory['plans'][] = [
-                    'id' => (string)$plans['id'],
-                    'name' => (string)$plans['name']
+                    'id' => (string)$plan['id'],
+                    'name' => (string)$plan['name'],
+//                    'extra' => $plan
+                    //TODO need find out about extra
                 ];
             }
 
@@ -79,10 +81,10 @@ class Expedia extends BaseChannel implements IBaseChannel
     /**
      * @param $url
      * @param string $data
-     * @param null $headers
+     * @param array $headers
      * @return bool|mixed|\SimpleXMLElement
      */
-    protected function processCurl($url, $data = "", $headers = null)
+    protected function processCurl($url, $data = "", $headers = [])
     {
         $result = parent::processCurl($url, $data, $headers);
         if ($result) {

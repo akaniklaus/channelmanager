@@ -39,7 +39,7 @@
         <tr>
             <td>{{$room->id}}</td>
             <td>{{$room->name}}</td>
-            <td></td>
+            <td>@if($mapping = $room->mapping()){{$mapping  ->name}}@endif</td>
             <td>
             {{link_to_action('RoomsController@getMap','Map',[$room->id,$channel->channel()->id])}}
             </td>

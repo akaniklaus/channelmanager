@@ -22,10 +22,10 @@ abstract class BaseChannel
     /**
      * @param $url
      * @param string $data
-     * @param null $headers
+     * @param array $headers
      * @return mixed
      */
-    protected function processCurl($url, $data = "", $headers = null)
+    protected function processCurl($url, $data = "", $headers = [])
     {
         if ($this->debug) {
             \Log::debug($data);
@@ -36,9 +36,17 @@ abstract class BaseChannel
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
-        if ($headers) {
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        if (!is_array($headers)) {
+            $headers = [];
         }
+        array_merge($headers, [
+            'Accept: application/xml',
+            'Connection: Keep-Alive',
+            'Accept-Language: en-us',
+            'Accept-Encoding: gzip, deflate',
+            'Content-Type: application/xml'
+        ]);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/536.5 (KHTML, like Gecko) Chrome/19.0.1084.9 Safari/536.5');
