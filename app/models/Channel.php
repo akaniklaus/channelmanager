@@ -13,4 +13,9 @@ class Channel extends \Eloquent
      * @var bool
      */
     public $incrementing = false;
+
+    public function inventory()
+    {
+        return $this->hasMany('Inventory');
+    }
 }

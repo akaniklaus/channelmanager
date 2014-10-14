@@ -2,11 +2,15 @@
 
 class InventoryMap extends \Eloquent
 {
+
+
+    protected $primaryKey = ['property_id', 'channel_id', 'room_id'];
+
     public static $rules = [
         'room_id' => 'required'
     ];
 
-    protected $fillable = ['name', 'room_id', 'inventory_id', 'property_id', 'channel_id'];
+    protected $fillable = ['name', 'room_id', 'inventory_code', 'property_id', 'channel_id'];
 
 
     /**
@@ -16,23 +20,20 @@ class InventoryMap extends \Eloquent
      */
     public $incrementing = false;
 
+
     /**
-     * @param $roomId
+     * @param $query
      * @param $channelId
      * @param $propertyId
-     * @param $first
-     * @return \Illuminate\Database\Eloquent\Model|null|static
+     * @param $roomId
+     * @return mixed
      */
-    public static function getMapping($roomId, $channelId, $propertyId, $first = true)
+    public function scopeGetByKeys($query, $channelId, $propertyId, $roomId)
     {
-        $obj = InventoryMap::where(
-            [
-                'room_id' => $roomId,
-                'channel_id' => $channelId,
-                'property_id' => $propertyId
-            ]
-        );
-
-        return $first ? $obj->first() : $obj;
+        return $query->where([
+            'room_id' => $roomId,
+            'channel_id' => $channelId,
+            'property_id' => $propertyId
+        ]);
     }
 }

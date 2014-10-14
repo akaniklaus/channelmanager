@@ -92,42 +92,66 @@ class RoomsController extends \BaseController
 //        $result = $channel->getInventoryList();//todo temp
 //        file_put_contents('1.txt', serialize($result));
         $result = unserialize(file_get_contents('1.txt'));
+        //add Inventories and Plans to DB//TODO move to another place
 
+        //delete exist maps
+        Inventory::where([
+            'channel_id' => $channelId,
+            'property_id' => $channelSettings->property_id,
+        ])->delete();
+        //delete exist plan maps
+        InventoryPlan::where([
+            'channel_id' => $channelId,
+            'property_id' => $channelSettings->property_id,
+        ])->delete();
+
+
+        foreach ($result as $inventory) {
+            Inventory::create([
+                'code' => $inventory['code'],
+                'name' => $inventory['name'],
+                'channel_id' => $channelId,
+                'property_id' => $channelSettings->property_id,
+            ]);
+
+            if ($inventory['plans']) {
+                foreach ($inventory['plans'] as $plan) {
+                    InventoryPlan::create([
+                        'code' => $plan['code'],
+                        'name' => $plan['name'],
+                        'channel_id' => $channelId,
+                        'inventory_code' => $inventory['code'],
+                        'property_id' => $channelSettings->property_id,
+                    ]);
+                }
+            }
+        }
         $existMapping = [];
         $mapCollection = InventoryMap::where(
             [
                 'channel_id' => $channelId,
                 'property_id' => $channelSettings->property_id
             ]
-        )->where('room_id', '!=', $id)->get(['inventory_id', 'room_id']);
-
-        foreach ($mapCollection as $map) {
-            $existMapping[] = $map->inventory_id;
-        }
-        $inventoryList = ['' => 'Unmapped'];
-        foreach ($result as $inventory) {
-            if (in_array($inventory['id'], $existMapping)) {
-                continue;
+        )->where('room_id', '!=', $id)->first(['inventory_code', 'room_id']);
+        if ($mapCollection) {
+            foreach ($mapCollection as $map) {
+                $existMapping[] = $map->inventory_code;
             }
-            $inventoryList[$inventory['id']] = $inventory['name'];
         }
+
+        $inventories = Channel::find($channelId)->inventory()->where('property_id', Property::getLoggedId());
+        $inventoryList = $inventories->lists('name', 'code');
 
         $inventoryPlans = [];
-        if ($inventory['plans']) {
-            foreach ($result as $inventory) {
-                if (in_array($inventory['id'], $existMapping)) {
-                    continue;
-                }
-                foreach ($inventory['plans'] as $plan) {
-                    $inventoryPlans[$inventory['id']][] = $plan;
-                }
+        foreach ($inventories->get() as $inventory) {
+            if (in_array($inventory->code, $existMapping)) {
+                continue;
             }
+            $inventoryPlans[$inventory->code] = $inventory->plans()->where('channel_id', $channelId)->get(['name', 'code']);
         }
         $inventoryPlans = json_encode($inventoryPlans);
 
-        $mapping = InventoryMap::getMapping($id, $channelId, $channelSettings->property_id);
-
-
+        $mapping = InventoryMap::getByKeys($channelId, $channelSettings->property_id, $id)->first();
         return View::make('rooms.map', compact('room', 'channel', 'inventoryList', 'inventoryPlans', 'channelId', 'mapping'));
     }
 
@@ -138,7 +162,6 @@ class RoomsController extends \BaseController
      */
     public function postMap()
     {
-
         $validator = Validator::make($data = Input::all(), InventoryMap::$rules);
 
         if ($validator->fails()) {
@@ -146,36 +169,30 @@ class RoomsController extends \BaseController
         }
         $data['property_id'] = Property::getLoggedId();
 
-        $mapping = InventoryMap::getMapping($data['room_id'], $data['channel_id'], $data['property_id'], false);
-
         //get inventory room name
-        if ($data['inventory_id']) {//TODO: find more fast way, the same as PIVOT below
-            $channel = ChannelFactory::create($data['channel_id']);
-            $channelSettings = PropertiesChannel::getSettings($data['channel_id'], Property::getLoggedId());
-            $channel->setHotelCode($channelSettings->hotel_code);
-//        $result = $channel->getInventoryList();//todo temp
-//        file_put_contents('1.txt', serialize($result));
-            $result = unserialize(file_get_contents('1.txt'));
-            foreach ($result as $one) {
-                if ($one['id'] == $data['inventory_id']) {
-                    $data['name'] = $one['name'];
-                    break;
-                }
+        if ($data['code']) {
+            $inventory = Inventory::getByKeys($data['channel_id'], $data['property_id'], $data['code'])->first();
+            if ($inventory) {
+                $data['name'] = $inventory->name;
             }
         } else {
             $data['name'] = '';
         }
 
-        if ($mapping && $mapping->first()) {//TODO rewrite to PIVOT ?
-            if (isset($data['_token'])) {
-                unset($data['_token']);
-            }
-            $mapping->update($data);
+        $preparedData = [
+            'name' => $data['name'],
+            'room_id' => $data['room_id'],
+            'inventory_code' => $data['code'],
+            'channel_id' => $data['channel_id'],
+            'property_id' => $data['property_id'],
+        ];
+
+        $mapping = InventoryMap::getByKeys($data['channel_id'], $data['property_id'], $data['room_id']);
+        if ($mapping && $mapping->first()) {
+            $mapping->update($preparedData);
         } else {
             InventoryMap::create($data);
         }
-
-
         return Redirect::action('RoomsController@getIndex');
     }
 

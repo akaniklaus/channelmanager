@@ -10,7 +10,8 @@
     "require": {
         "laravel/framework": "4.2.*",
         "barryvdh/laravel-ide-helper": "1.*",
-        "twitter/bootstrap": "*"
+        "twitter/bootstrap": "*",
+        "barryvdh/laravel-debugbar": "dev-master"
     },
     "autoload": {
         "classmap": [

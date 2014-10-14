@@ -3,14 +3,14 @@
 <script>
 var PLANS = {{$inventoryPlans}}
 $(function() {
-  $('#inventory_id').on('change',function(){
+  $('#code').on('change',function(){
     $('#plans').text('');
-    for(var inventory_id in PLANS){
-      if($('#inventory_id').val() != inventory_id){
+    for(var code in PLANS){
+      if($('#code').val() != code){
         continue;
       }
-      for(var i in PLANS[inventory_id]){
-      $('#plans').append('<li>'+PLANS[inventory_id][i].id+':'+PLANS[inventory_id][i].name+'</li>');
+      for(var i in PLANS[code]){
+      $('#plans').append('<li>'+PLANS[code][i].code+':'+PLANS[code][i].name+'</li>');
       }
     }
   })
@@ -22,8 +22,8 @@ $(function() {
 {{Form::hidden('channel_id',$channelId)}}
 {{Form::label('name','Room name:')}} {{{$room->name}}}
 <br/>
-{{Form::label('inventory_id','Channel inventory name:')}}
-{{Form::select('inventory_id',$inventoryList,$mapping->inventory_id)}}
+{{Form::label('code','Channel inventory name:')}}
+{{Form::select('code',[''=>'Unmapped']+$inventoryList,($mapping)?$mapping->inventory_code:'')}}
 <br/>
 <ul id="plans"></ul>
 {{Form::submit('Map room')}}

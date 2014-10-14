@@ -122,7 +122,8 @@ return array(
         'Illuminate\View\ViewServiceProvider',
         'Illuminate\Workbench\WorkbenchServiceProvider',
         'Way\Generators\GeneratorsServiceProvider',
-        'Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider'
+        'Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider',
+        'Barryvdh\Debugbar\ServiceProvider',
     ),
 
     /*
@@ -190,6 +191,7 @@ return array(
         'Validator' => 'Illuminate\Support\Facades\Validator',
         'View' => 'Illuminate\Support\Facades\View',
         "ChannelFactory" => 'Channels\ChannelFactory',
+        'Debugbar' => 'Barryvdh\Debugbar\Facade',
     ),
 
 );

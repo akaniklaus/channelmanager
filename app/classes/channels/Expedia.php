@@ -45,12 +45,12 @@ class Expedia extends BaseChannel implements IBaseChannel
         $inventories = [];
         foreach ($result->ProductList->RoomType as $one) {
             $inventory = [
-                'id' => (string)$one['id'],
+                'code' => (string)$one['id'],
                 'name' => (string)$one['name']
             ];
             foreach ($one->RatePlan as $plan) {
                 $inventory['plans'][] = [
-                    'id' => (string)$plan['id'],
+                    'code' => (string)$plan['id'],
                     'name' => (string)$plan['name'],
 //                    'extra' => $plan
                     //TODO need find out about extra
