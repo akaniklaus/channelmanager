@@ -132,21 +132,22 @@ class RoomsController extends \BaseController
                 'channel_id' => $channelId,
                 'property_id' => $channelSettings->property_id
             ]
-        )->where('room_id', '!=', $id)->first(['inventory_code', 'room_id']);
+        )->where('room_id', '<>', $id)->lists('inventory_code', 'room_id');
         if ($mapCollection) {
             foreach ($mapCollection as $map) {
-                $existMapping[] = $map->inventory_code;
+                $existMapping[] = $map;
             }
         }
-
         $inventories = Channel::find($channelId)->inventory()->where('property_id', Property::getLoggedId());
-        $inventoryList = $inventories->lists('name', 'code');
 
+        $inventoryList = [];
         $inventoryPlans = [];
         foreach ($inventories->get() as $inventory) {
             if (in_array($inventory->code, $existMapping)) {
                 continue;
             }
+            $inventoryList[$inventory->code] = $inventory->name;
+
             $inventoryPlans[$inventory->code] = $inventory->plans()->where('channel_id', $channelId)->get(['name', 'code']);
         }
         $inventoryPlans = json_encode($inventoryPlans);
@@ -191,7 +192,7 @@ class RoomsController extends \BaseController
         if ($mapping && $mapping->first()) {
             $mapping->update($preparedData);
         } else {
-            InventoryMap::create($data);
+            InventoryMap::create($preparedData);
         }
         return Redirect::action('RoomsController@getIndex');
     }
