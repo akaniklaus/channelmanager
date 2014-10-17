@@ -2,10 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>CM</title>
     {{ HTML::style('css/bootstrap.min.css') }}
+    {{ HTML::style('css/datepicker3.css') }}
+
     {{ HTML::script('js/jquery-1.11.1.min.js') }}
     {{ HTML::script('js/bootstrap.min.js') }}
+    {{ HTML::script('js/bootstrap-datepicker.js') }}
+    @yield('scripts')
 </head>
 <body>
 @section('sidebar')
@@ -33,8 +38,9 @@
         <ul class="nav navbar-nav navbar-right">
           <li @if(!Request::segment(1)) class="active" @endif>{{link_to_action('HomeController@getIndex','Home')}}</li>
           <li @if(Request::segment(1)==="properties") class="active" @endif>{{link_to_action('PropertiesController@getIndex','Properties')}}</li>
-          <li @if(Request::segment(1)==="rooms") class="active" @endif>{{link_to_action('RoomsController@getIndex','Rooms list')}}</li>
           <li @if(Request::segment(1)==="channels") class="active" @endif>{{link_to_action('PropertiesChannelsController@getIndex','Channels settings')}}</li>
+          <li @if(Request::segment(1)==="rooms") class="active" @endif>{{link_to_action('RoomsController@getIndex','Rooms list')}}</li>
+          <li @if(Request::segment(1)==="bulk") class="active" @endif>{{link_to_action('BulkController@getIndex','Bulk Update')}}</li>
         </ul>
     </div>
   </div>

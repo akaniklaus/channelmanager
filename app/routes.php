@@ -15,3 +15,4 @@ Route::get('/', 'HomeController@getIndex');
 Route::controller('properties', 'PropertiesController');
 Route::controller('rooms', 'RoomsController');
 Route::controller('channels', 'PropertiesChannelsController');
+Route::controller('bulk', 'BulkController');

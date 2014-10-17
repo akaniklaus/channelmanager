@@ -19,11 +19,16 @@ class Expedia extends BaseChannel implements IBaseChannel
         'getInventoryList' => [
             'test' => 'https://simulator.expediaquickconnect.com/connect/parr',
             'live' => 'https://ws.expediaquickconnect.com/connect/parr'
+        ],
+        'setRate' => [
+            'test' => 'https://simulator.expediaquickconnect.com/connect/ar',
+            'live' => 'https://ws.expediaquickconnect.com/connect/ar'
         ]
     ];
 
     protected $ns = [
-        'PAR' => 'http://www.expediaconnect.com/EQC/PAR/2013/07'
+        'PAR' => 'http://www.expediaconnect.com/EQC/PAR/2013/07',//getInventoryList
+        'AR' => 'http://www.expediaconnect.com/EQC/AR/2011/06'
     ];
 
     /**
@@ -65,6 +70,31 @@ class Expedia extends BaseChannel implements IBaseChannel
 
         //TODO add rate plans, manage derived and price type
 
+    }
+
+    protected function getWeekDaysStr($days)
+    {
+        $daysMap = ['mon' => 1, 'tue' => 2, 'wed' => 3, 'thu' => 4, 'fri' => 5, 'sat' => 6, 'sun' => 7];
+        $daysStr = '';
+        foreach ($daysMap as $name => $value) {
+            $daysStr .= $name . '="' . isset($days[$value]) && $days[$value] ? 'true' : 'false';
+        }
+    }
+
+    protected function setRate($roomId, $ratePlanId, $fromDate, $toDate, $days, $rate)
+    {
+        $xml = '<AvailRateUpdate>' .
+            '<DateRange from="' . $fromDate . '" to="' . $toDate . '" ' . $this->getWeekDaysStr($days) . ' />' .
+            '<RoomType id="' . $roomId . '">' .
+            '<RatePlan id="' . $ratePlanId . '">' .
+            '<Rate currency="' . $this->getCurrency() . '">' .
+            '<PerDay rate="' . $rate . '"/>' .
+            '</Rate>' .
+            '</RatePlan>' .
+            '</RoomType>' .
+            '</AvailRateUpdate>';
+        $xml = $this->prepareXml('<AvailRateUpdate', $this->ns['AR'], $xml);
+        $result = $this->processCurl($this->getUrl(__FUNCTION__), $xml);
     }
 
 

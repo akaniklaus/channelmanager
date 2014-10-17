@@ -6,4 +6,9 @@
 interface IBaseChannel
 {
     public function getInventoryList();
+
+    /**
+     * @param string $currency
+     */
+    public function setCurrency($currency);
 }

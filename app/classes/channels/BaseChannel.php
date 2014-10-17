@@ -9,6 +9,24 @@ abstract class BaseChannel
 
     protected $testMode = true;
 
+    protected $currency = 'EUR';
+
+    /**
+     * @return string
+     */
+    public function getCurrency()
+    {
+        return $this->currency;
+    }
+
+    /**
+     * @param string $currency
+     */
+    public function setCurrency($currency)
+    {
+        $this->currency = $currency;
+    }
+
     protected function getTestMode()
     {
         return $this->testMode ? 'test' : 'live';
