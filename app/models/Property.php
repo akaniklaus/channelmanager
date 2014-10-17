@@ -12,11 +12,11 @@ class Property extends \Eloquent
 
     // Add your validation rules here
     public static $rules = [
-        // 'title' => 'required'
+        'name' => 'required', 'currency' => 'required'
     ];
 
     // Don't forget to fill this array
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'currency'];
 
     public static function getLoggedId()
     {
