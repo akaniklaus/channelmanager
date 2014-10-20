@@ -1,5 +1,25 @@
 <?php
 
+/**
+ * InventoryMap
+ *
+ * @property string $name
+ * @property integer $room_id
+ * @property integer $property_id
+ * @property integer $channel_id
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
+ * @property string $inventory_code
+ * @property-read \Inventory $inventory
+ * @method static \Illuminate\Database\Query\Builder|\InventoryMap whereName($value)
+ * @method static \Illuminate\Database\Query\Builder|\InventoryMap whereRoomId($value)
+ * @method static \Illuminate\Database\Query\Builder|\InventoryMap wherePropertyId($value)
+ * @method static \Illuminate\Database\Query\Builder|\InventoryMap whereChannelId($value)
+ * @method static \Illuminate\Database\Query\Builder|\InventoryMap whereCreatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\InventoryMap whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\InventoryMap whereInventoryCode($value)
+ * @method static \InventoryMap getByKeys($channelId, $propertyId, $roomId)
+ */
 class InventoryMap extends \Eloquent
 {
 
