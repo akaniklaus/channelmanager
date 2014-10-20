@@ -19,6 +19,10 @@
  * @method static \Illuminate\Database\Query\Builder|\InventoryMap whereUpdatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\InventoryMap whereInventoryCode($value)
  * @method static \InventoryMap getByKeys($channelId, $propertyId, $roomId)
+ * @property string $plan_code
+ * @property string $plan_name
+ * @method static \Illuminate\Database\Query\Builder|\InventoryMap wherePlanCode($value)
+ * @method static \Illuminate\Database\Query\Builder|\InventoryMap wherePlanName($value)
  */
 class InventoryMap extends \Eloquent
 {
@@ -27,10 +31,12 @@ class InventoryMap extends \Eloquent
     protected $primaryKey = ['property_id', 'channel_id', 'room_id'];
 
     public static $rules = [
-        'room_id' => 'required'
+        'room_id' => 'required',
+        'plans' => 'required_with:code'
     ];
 
-    protected $fillable = ['name', 'room_id', 'inventory_code', 'property_id', 'channel_id'];
+    protected $fillable = ['name', 'room_id', 'inventory_code',
+        'property_id', 'channel_id', 'plan_code', 'plan_name'];
 
 
     /**
@@ -46,9 +52,10 @@ class InventoryMap extends \Eloquent
      * @param $channelId
      * @param $propertyId
      * @param $roomId
+     * @param $planCode
      * @return mixed
      */
-    public function scopeGetByKeys($query, $channelId = null, $propertyId, $roomId)
+    public function scopeGetByKeys($query, $channelId = null, $propertyId, $roomId, $planCode = null)
     {
         $params = [
             'room_id' => $roomId,
@@ -56,6 +63,9 @@ class InventoryMap extends \Eloquent
         ];
         if ($channelId) {
             $params['channel_id'] = $channelId;
+        }
+        if ($planCode) {
+            $params['plan_code'] = $planCode;
         }
         return $query->where($params);
     }

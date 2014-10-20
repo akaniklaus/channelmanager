@@ -17,6 +17,7 @@
  * @method static \Illuminate\Database\Query\Builder|\InventoryPlan whereCreatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\InventoryPlan whereUpdatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\InventoryPlan wherePropertyId($value)
+ * @method static \InventoryPlan getByKeys($channelId, $propertyId, $code)
  */
 class InventoryPlan extends \Eloquent
 {
@@ -24,4 +25,20 @@ class InventoryPlan extends \Eloquent
     public $incrementing = false;
 
     protected $fillable = ['name', 'code', 'channel_id', 'inventory_code', 'property_id'];
+
+    /**
+     * @param $query
+     * @param $code
+     * @param $channelId
+     * @param $propertyId
+     * @return mixed
+     */
+    public function scopeGetByKeys($query, $channelId, $propertyId, $code)
+    {
+        return $query->where([
+            'code' => $code,
+            'channel_id' => $channelId,
+            'property_id' => $propertyId,
+        ]);
+    }
 }

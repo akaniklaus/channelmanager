@@ -10,9 +10,7 @@
     "require": {
         "laravel/framework": "4.2.*",
         "barryvdh/laravel-ide-helper": "1.*",
-        "twitter/bootstrap": "*",
         "barryvdh/laravel-debugbar": "dev-master",
-        "eternicode/bootstrap-datepicker": "*",
         "doctrine/dbal": "~2.3"
     },
     "autoload": {
