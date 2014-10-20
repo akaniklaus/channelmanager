@@ -28,12 +28,20 @@ class InventoryMap extends \Eloquent
      * @param $roomId
      * @return mixed
      */
-    public function scopeGetByKeys($query, $channelId, $propertyId, $roomId)
+    public function scopeGetByKeys($query, $channelId = null, $propertyId, $roomId)
     {
-        return $query->where([
+        $params = [
             'room_id' => $roomId,
-            'channel_id' => $channelId,
             'property_id' => $propertyId
-        ]);
+        ];
+        if ($channelId) {
+            $params['channel_id'] = $channelId;
+        }
+        return $query->where($params);
+    }
+
+    public function inventory()
+    {
+        return $this->hasOne('Inventory', 'code', 'inventory_code')->where('channel_id', $this->channel_id)->first();
     }
 }

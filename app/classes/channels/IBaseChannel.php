@@ -5,6 +5,11 @@
  */
 interface IBaseChannel
 {
+    /**
+     * @param PropertiesChannel $channelSettings
+     */
+    public function __construct($channelSettings);
+
     public function getInventoryList();
 
     /**

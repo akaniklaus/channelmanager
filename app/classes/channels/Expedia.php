@@ -31,6 +31,12 @@ class Expedia extends BaseChannel implements IBaseChannel
         'AR' => 'http://www.expediaconnect.com/EQC/AR/2011/06'
     ];
 
+
+    public function __construct($channelSettings)
+    {
+        $this->setHotelCode($channelSettings->hotel_code);
+    }
+
     /**
      * @return array
      */
@@ -47,8 +53,11 @@ class Expedia extends BaseChannel implements IBaseChannel
             '</ParamSet>';
         $xml = $this->prepareXml('ProductAvailRateRetrieval', $this->ns['PAR'], $xml);
         $result = $this->processCurl($this->getUrl(__FUNCTION__), $xml);
+        if (!$result['success']) {
+            return [];
+        }
         $inventories = [];
-        foreach ($result->ProductList->RoomType as $one) {
+        foreach ($result['data']->ProductList->RoomType as $one) {
             $inventory = [
                 'code' => (string)$one['id'],
                 'name' => (string)$one['name']
@@ -74,17 +83,18 @@ class Expedia extends BaseChannel implements IBaseChannel
 
     protected function getWeekDaysStr($days)
     {
-        $daysMap = ['mon' => 1, 'tue' => 2, 'wed' => 3, 'thu' => 4, 'fri' => 5, 'sat' => 6, 'sun' => 7];
+        $daysMap = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
         $daysStr = '';
-        foreach ($daysMap as $name => $value) {
-            $daysStr .= $name . '="' . isset($days[$value]) && $days[$value] ? 'true' : 'false';
+        foreach ($daysMap as $key => $name) {
+            $daysStr .= $name . '="' . (in_array($key, $days) ? 'true' : 'false') . '" ';
         }
+        return $daysStr;
     }
 
-    protected function setRate($roomId, $ratePlanId, $fromDate, $toDate, $days, $rate)
+    public function setRate($roomId, $ratePlanId, $fromDate, $toDate, $days, $rate)
     {
         $xml = '<AvailRateUpdate>' .
-            '<DateRange from="' . $fromDate . '" to="' . $toDate . '" ' . $this->getWeekDaysStr($days) . ' />' .
+            '<DateRange from="' . $fromDate . '" to="' . $toDate . '" ' . $this->getWeekDaysStr($days) . '/>' .
             '<RoomType id="' . $roomId . '">' .
             '<RatePlan id="' . $ratePlanId . '">' .
             '<Rate currency="' . $this->getCurrency() . '">' .
@@ -93,8 +103,12 @@ class Expedia extends BaseChannel implements IBaseChannel
             '</RatePlan>' .
             '</RoomType>' .
             '</AvailRateUpdate>';
-        $xml = $this->prepareXml('<AvailRateUpdate', $this->ns['AR'], $xml);
+        $xml = $this->prepareXml('AvailRateUpdate', $this->ns['AR'], $xml);
         $result = $this->processCurl($this->getUrl(__FUNCTION__), $xml);
+        if ($result['success']) {
+            return true;
+        }
+        return $result['errors'];
     }
 
 
@@ -112,15 +126,28 @@ class Expedia extends BaseChannel implements IBaseChannel
      * @param $url
      * @param string $data
      * @param array $headers
-     * @return bool|mixed|\SimpleXMLElement
+     * @return bool|array|mixed|\SimpleXMLElement
      */
     protected function processCurl($url, $data = "", $headers = [])
     {
+        $success = false;
+        $errors = [];
         $result = parent::processCurl($url, $data, $headers);
         if ($result) {
-            return simplexml_load_string($result);
+            $resultObj = simplexml_load_string($result);
+            if ($resultObj->Error) {
+                foreach ($resultObj->Error as $error) {
+                    $errors[] = (string)$error;
+                }
+            } else {
+                $success = true;
+            }
         }
-        return false;
+        return [
+            'success' => $success,
+            'errors' => $errors,
+            'data' => $result
+        ];
     }
 
     public function setHotelCode($hotelCode)

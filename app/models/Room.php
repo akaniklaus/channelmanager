@@ -15,9 +15,14 @@ class Room extends \Eloquent
     // Don't forget to fill this array
     protected $fillable = ['name', 'rack_rate', 'property_id'];
 
-    public function mapping()
+    public function mapping($channelId)
     {
-        return $this->hasOne('InventoryMap', 'room_id')->first();
+        return $this->hasOne('InventoryMap', 'room_id')->where('channel_id', $channelId)->first();
+    }
+
+    public function mappingList()
+    {
+        return $this->hasOne('InventoryMap', 'room_id')->get();
     }
 
 }

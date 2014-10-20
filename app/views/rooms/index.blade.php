@@ -26,25 +26,27 @@
 </table>
 
 
-@foreach ($channels as $channel)
-<h2>{{$channel->channel()->name}} Rooms</h2>
-    <table  class="table">
-        <tr>
-            <th>id</th>
-            <th>name</th>
-            <th>Mapped room</th>
-            <th>actions</th>
-        </tr>
-    @foreach ($rooms as $room)
-        <tr>
-            <td>{{$room->id}}</td>
-            <td>{{$room->name}}</td>
-            <td>@if($mapping = $room->mapping()){{$mapping  ->name}}@endif</td>
-            <td>
-            {{link_to_action('RoomsController@getMap','Map',[$room->id,$channel->channel()->id])}}
-            </td>
-        </tr>
-    @endforeach
-    </table>
+@foreach ($channels as $channelSettings)
+    @if($channel = $channelSettings->channel())
+        <h2>{{$channel->name}} Rooms</h2>
+        <table  class="table">
+            <tr>
+                <th>id</th>
+                <th>name</th>
+                <th>Mapped room</th>
+                <th>actions</th>
+            </tr>
+            @foreach ($rooms as $room)
+                <tr>
+                    <td>{{$room->id}}</td>
+                    <td>{{$room->name}}</td>
+                    <td>@if($mapping = $room->mapping($channel->id)){{$mapping->name}}@endif</td>
+                    <td>
+                    {{link_to_action('RoomsController@getMap','Map',[$room->id,$channel->id])}}
+                    </td>
+                </tr>
+            @endforeach
+        </table>
+    @endif
 @endforeach
 @stop

@@ -9,7 +9,7 @@ class Inventory extends \Eloquent
 
     public function plans()
     {
-        return $this->hasMany('InventoryPlan', 'inventory_code', 'code');
+        return $this->hasMany('InventoryPlan', 'inventory_code', 'code')->where('channel_id', $this->channel_id);
     }
 
     /**

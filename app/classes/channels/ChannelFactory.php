@@ -7,14 +7,14 @@ class ChannelFactory
 {
 
     /**
-     * @param $chanelId
+     * @param PropertiesChannel $channelSettings
      * @return Expedia
      */
-    public static function create($chanelId)
+    public static function create($channelSettings)
     {
-        switch ($chanelId) {
+        switch ($channelSettings->channel_id) {
             case 3:
-                return new Expedia();
+                return new Expedia($channelSettings);
         }
     }
 

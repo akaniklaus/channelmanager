@@ -11,7 +11,11 @@ class BulkController extends \BaseController
      */
     public function getIndex()
     {
-        $rooms = Room::where('property_id', Property::getLoggedId())->get();
+        //TODO: move to model after finish, rebuild to full ORM
+        $rooms = Room::where('property_id', Property::getLoggedId())->whereExists(function ($query) {
+            $query->select(DB::raw(1))->from('inventory_maps as im')
+                ->whereRaw('im.room_id = rooms.id AND im.inventory_code is not NULL and im.inventory_code <> ""');
+        })->get();
         return View::make('bulk.rates', compact('rooms'));
     }
 
@@ -33,6 +37,51 @@ class BulkController extends \BaseController
                 'errors' => $validator->getMessageBag()->toArray()
             ], 400); //400 - http error code
         }
+
+        //all ok so get rooms and plans mapping
+
+        $weekDays = ($data['week_day']);
+
+        $errors = [];
+
+        foreach ($data['rooms'] as $roomId) {
+            //get room data
+//            $room = Room::findOrFail($roomId);
+            //get plan mapping
+
+            $property = Property::findOrFail(Property::getLoggedId());
+
+            $maps = InventoryMap::getByKeys(null, $property->id, $roomId)->get();
+            foreach ($maps as $mapping) {
+                //get channel
+                $channelSettings = PropertiesChannel::getSettings($mapping->channel_id, $mapping->property_id);
+                $channel = ChannelFactory::create($channelSettings);
+                $channel->setCurrency($property->currency);
+                //TODO Rate plans per room
+                foreach ($mapping->inventory()->plans()->get() as $plan) {
+                    //updating rates
+                    //TODO rewrite to queue
+                    $result = $channel->setRate($plan->inventory_code, $plan->code, $data['from_date'], $data['to_date'], $weekDays, $data['rate']);
+                    if (is_array($result)) {
+                        $formattedErrors = [];
+                        foreach ($result as $error) {
+                            $formattedErrors[] = $channelSettings->channel()->name . ': ' . $error;
+                        }
+                        $errors += $formattedErrors;
+                    }
+                }
+//
+            }
+
+        }
+
+        if (!empty($errors)) {
+            return Response::json([
+                'success' => false,
+                'errors' => $errors
+            ], 400); //400 - http error code
+        }
+
 
         return Response::json([
             'success' => true,

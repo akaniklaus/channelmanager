@@ -35,40 +35,41 @@
             <button type="button" class="btn btn-link btn-xs"  onclick="bulkUnSelectAll('bulk-weekdays')">Unselect All</button>
           </p>
           <div class="checkbox">
-            <label>{{Form::checkbox('week_day[]',1,true)}}Monday</label>
+            <label>{{Form::checkbox('week_day[]',0,true)}}Monday</label>
           </div>
           <div class="checkbox">
-              <label>{{Form::checkbox('week_day[]',2,true)}}Tuesday</label>
+              <label>{{Form::checkbox('week_day[]',1,true)}}Tuesday</label>
           </div>
           <div class="checkbox">
-            <label>{{Form::checkbox('week_day[]',3,true)}}Wednesday</label>
+            <label>{{Form::checkbox('week_day[]',2,true)}}Wednesday</label>
           </div>
           <div class="checkbox">
-              <label>{{Form::checkbox('week_day[]',4,true)}}Thursday</label>
+              <label>{{Form::checkbox('week_day[]',3,true)}}Thursday</label>
           </div>
           <div class="checkbox">
-              <label>{{Form::checkbox('week_day[]',5,true)}}Friday</label>
+              <label>{{Form::checkbox('week_day[]',4,true)}}Friday</label>
           </div>
           <div class="checkbox">
-              <label>{{Form::checkbox('week_day[]',6,true)}}Saturday</label>
+              <label>{{Form::checkbox('week_day[]',5,true)}}Saturday</label>
           </div>
           <div class="checkbox">
-              <label>{{Form::checkbox('week_day[]',7,true)}}Sunday</label>
+              <label>{{Form::checkbox('week_day[]',6,true)}}Sunday</label>
           </div>
   </div>
-  <div class="col-xs-6 col-md-4 bulk-rate-cat">
-        <label>For one or more of these Rate Categories:</label>
-        <p>
-            <button type="button" class="btn btn-link btn-xs"  onclick="bulkSelectAll('bulk-rate-cat')">Select All</button>
-            <button type="button" class="btn btn-link btn-xs"  onclick="bulkUnSelectAll('bulk-rate-cat')">Unselect All</button>
-        </p>
-        <div class="checkbox">
-          <label>{{Form::checkbox('rate_cats[]',1)}}Standard Rate</label>
-        </div>
-        <div class="checkbox">
-            <label>{{Form::checkbox('rate_cats[]',2)}}Non-refundable</label>
-        </div>
-  </div>
+
+  {{--<div class="col-xs-6 col-md-4 bulk-rate-cat">--}}
+        {{--<label>For one or more of these Rate Categories:</label>--}}
+        {{--<p>--}}
+            {{--<button type="button" class="btn btn-link btn-xs"  onclick="bulkSelectAll('bulk-rate-cat')">Select All</button>--}}
+            {{--<button type="button" class="btn btn-link btn-xs"  onclick="bulkUnSelectAll('bulk-rate-cat')">Unselect All</button>--}}
+        {{--</p>--}}
+        {{--<div class="checkbox">--}}
+          {{--<label>{{Form::checkbox('rate_cats[]',1)}}Standard Rate</label>--}}
+        {{--</div>--}}
+        {{--<div class="checkbox">--}}
+            {{--<label>{{Form::checkbox('rate_cats[]',2)}}Non-refundable</label>--}}
+        {{--</div>--}}
+  {{--</div>--}}
   <div class="col-xs-6 col-md-4 bulk-rooms">
         <label>One or more of these Rooms:</label>
         <p>

@@ -86,9 +86,7 @@ class RoomsController extends \BaseController
         $room = Room::find($id);
 
         $channelSettings = PropertiesChannel::getSettings($channelId, Property::getLoggedId());
-
-        $channel = ChannelFactory::create($channelId);
-        $channel->setHotelCode($channelSettings->hotel_code);
+        $channel = ChannelFactory::create($channelSettings);
 //        $result = $channel->getInventoryList();//todo temp
 //        file_put_contents('1.txt', serialize($result));
         $result = unserialize(file_get_contents('1.txt'));
@@ -148,7 +146,7 @@ class RoomsController extends \BaseController
             }
             $inventoryList[$inventory->code] = $inventory->name;
 
-            $inventoryPlans[$inventory->code] = $inventory->plans()->where('channel_id', $channelId)->get(['name', 'code']);
+            $inventoryPlans[$inventory->code] = $inventory->plans()->get(['name', 'code']);
         }
         $inventoryPlans = json_encode($inventoryPlans);
 
