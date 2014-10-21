@@ -47,7 +47,7 @@ class PropertiesChannel extends \Eloquent
     /**
      * @param $channelId
      * @param $propertyId
-     * @return \Illuminate\Database\Eloquent\Model|null|static
+     * @return \Illuminate\Database\Eloquent\Model|null|static|PropertiesChannel
      */
     public static function getSettings($channelId, $propertyId)
     {

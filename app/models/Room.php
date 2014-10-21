@@ -17,6 +17,15 @@
  * @method static \Illuminate\Database\Query\Builder|\Room wherePropertyId($value)
  * @method static \Illuminate\Database\Query\Builder|\Room whereCreatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\Room whereUpdatedAt($value)
+ * @property string $type
+ * @property integer $parent_id
+ * @property string $formula_type
+ * @property float $formula_value
+ * @property-read \Room $parent
+ * @method static \Illuminate\Database\Query\Builder|\Room whereType($value)
+ * @method static \Illuminate\Database\Query\Builder|\Room whereParentId($value)
+ * @method static \Illuminate\Database\Query\Builder|\Room whereFormulaType($value)
+ * @method static \Illuminate\Database\Query\Builder|\Room whereFormulaValue($value)
  */
 class Room extends \Eloquent
 {
