@@ -23,11 +23,16 @@ class Room extends \Eloquent
 
     // Add your validation rules here
     public static $rules = [
-        'name' => 'required'
+        'name' => 'required',
+        'type' => 'required|in:"room","plan"',
+        'formula_type' => 'required_with:parent_id|in:"x","-","+"',
+        'formula_value' => 'required_with:formula_type|numeric|min:0'
     ];
 
     // Don't forget to fill this array
-    protected $fillable = ['name', 'rack_rate', 'property_id'];
+    protected $fillable = ['name', 'rack_rate', 'property_id', 'type', 'parent_id', 'formula_type', 'formula_value'];
+
+    public static $formulaTypes = ['x' => 'x', '+' => '+', '-' => '-'];
 
     public function mapping($channelId)
     {
@@ -37,6 +42,11 @@ class Room extends \Eloquent
     public function mappingList()
     {
         return $this->hasOne('InventoryMap', 'room_id')->get();
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo('Room', 'parent_id', 'id')->first();
     }
 
 }

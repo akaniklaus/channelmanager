@@ -12,7 +12,6 @@ class RoomsController extends \BaseController
     {
         $rooms = Room::where('property_id', Property::getLoggedId())->get();
 
-        //TODO: show plans mapped
         $channels = PropertiesChannel::where('property_id', Property::getLoggedId())->get();
 
         return View::make('rooms.index', compact('rooms', 'channels'));
@@ -25,9 +24,12 @@ class RoomsController extends \BaseController
      */
     public function getCreate()
     {
-        $properties = Property::lists('name', 'id');
+        $rooms = Room::where('property_id', Property::getLoggedId())->where('type', '<>', 'plan')->lists('name', 'id');
 
-        return View::make('rooms.create', compact('properties'));
+        $properties = Property::lists('name', 'id');
+        $formulaTypes = Room::$formulaTypes;
+
+        return View::make('rooms.create', compact('properties', 'rooms', 'formulaTypes'));
     }
 
     /**
@@ -71,8 +73,12 @@ class RoomsController extends \BaseController
     public function getEdit($id)
     {
         $room = Room::find($id);
-
-        return View::make('rooms.edit', compact('room'));
+        $rooms = Room::where('property_id', Property::getLoggedId())
+            ->where('type', '<>', 'plan')
+            ->where('id', '<>', $id)
+            ->lists('name', 'id');
+        $formulaTypes = Room::$formulaTypes;
+        return View::make('rooms.edit', compact('room', 'formulaTypes', 'rooms'));
     }
 
     /**
