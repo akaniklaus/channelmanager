@@ -19,7 +19,7 @@
         <td>{{$room->rack_rate}}</td>
         <td>{{$room->property_id}}</td>
         <td>{{$room->type}}</td>
-        <td>@if($parent = $room->parent()){{$room->parent()->name}} {{$room->formula_type}} {{$room->formula_value}}@endif</td>
+        <td>@if($parent = $room->parent()){{$parent->name}} {{$room->formula_type}} {{$room->formula_value}}@endif</td>
         <td>
         {{link_to_action('RoomsController@getEdit','Edit',$room->id)}}
         | {{link_to_action('RoomsController@getDestroy','Delete',$room->id)}}

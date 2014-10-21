@@ -58,4 +58,20 @@ class Room extends \Eloquent
         return $this->belongsTo('Room', 'parent_id', 'id')->first();
     }
 
+    public function children()
+    {
+        return $this->hasMany('Room', 'parent_id', 'id');
+    }
+
+    public function scopeForBulkUpdate($query, $propertyId)
+    {
+        return $query->where('property_id', $propertyId)
+            ->where(function ($query) {
+                $query->where('parent_id', 0)->orWhereNull('parent_id');
+            })
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))->from('inventory_maps as im')
+                    ->whereRaw('im.room_id = rooms.id');
+            });
+    }
 }

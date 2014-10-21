@@ -12,13 +12,9 @@ class BulkController extends \BaseController
     public function getIndex()
     {
         //TODO: move to model after finish, rebuild to full ORM
-        $rooms = Room::where('property_id', Property::getLoggedId())->whereExists(function ($query) {
-            $query->select(DB::raw(1))->from('inventory_maps as im')
-                ->whereRaw('im.room_id = rooms.id AND im.inventory_code is not NULL and im.inventory_code <> ""');
-        })->get();
+        $rooms = Room::forBulkUpdate(Property::getLoggedId())->get();
         return View::make('bulk.rates', compact('rooms'));
     }
-
 
     public function postUpdateRates()
     {
@@ -43,32 +39,13 @@ class BulkController extends \BaseController
         $weekDays = ($data['week_day']);
 
         $errors = [];
+        $property = Property::findOrFail(Property::getLoggedId());
 
         foreach ($data['rooms'] as $roomId) {
             //get room data
-//            $room = Room::findOrFail($roomId);
-            //get plan mapping
-
-            $property = Property::findOrFail(Property::getLoggedId());
-
-            $maps = InventoryMap::getByKeys(null, $property->id, $roomId)->get();
-            foreach ($maps as $mapping) {
-                //get channel
-                $channelSettings = PropertiesChannel::getSettings($mapping->channel_id, $mapping->property_id);
-                $channel = ChannelFactory::create($channelSettings);
-                $channel->setCurrency($property->currency);
-                //updating rates
-                //TODO rewrite to queue
-                $result = $channel->setRate($mapping->inventory_code, $mapping->plan_code, $data['from_date'], $data['to_date'], $weekDays, $data['rate']);
-                if (is_array($result)) {
-                    $formattedErrors = [];
-                    foreach ($result as $error) {
-                        $formattedErrors[] = $channelSettings->channel()->name . ': ' . $error;
-                    }
-                    $errors += $formattedErrors;
-                }
-//
-            }
+            $room = Room::findOrFail($roomId);
+            $depth = 0;
+            $this->updateChannelRate($room, $property, $data, $data['rate'], $weekDays, $errors, $depth);
 
         }
 
@@ -83,6 +60,68 @@ class BulkController extends \BaseController
         return Response::json([
             'success' => true,
         ], 200); //200 - http success code
+    }
+
+
+    /**
+     * Recursive function
+     * TODO: move to another place
+     * @param Room $room
+     * @param Property $property
+     * @param $data
+     * @param $rate - rate value for update chanel
+     * @param $weekDays
+     * @param $errors
+     * @param $depth
+     */
+    function updateChannelRate($room, $property, $data, $rate, $weekDays, &$errors, &$depth)
+    {
+        Log::info($room->name);
+        if ($depth > 5) {//infinity loop protection
+            return;
+        }
+
+        //get plan mapping
+        $maps = InventoryMap::getByKeys(null, $property->id, $room->id)->get();
+        foreach ($maps as $mapping) {
+            //get channel
+            $channelSettings = PropertiesChannel::getSettings($mapping->channel_id, $mapping->property_id);
+            $channel = ChannelFactory::create($channelSettings);
+            $channel->setCurrency($property->currency);
+            //updating rates
+
+            $result = $channel->setRate($mapping->inventory_code, $mapping->plan_code, $data['from_date'], $data['to_date'], $weekDays, $rate);
+            if (is_array($result)) {
+                $formattedErrors = [];
+                foreach ($result as $error) {
+                    $formattedErrors[] = $channelSettings->channel()->name . ': ' . $error;
+                }
+                $errors += $formattedErrors;
+            }
+        }
+        //check if children rooms exist
+        if ($children = $room->children()->get()) {
+            if (!$children->isEmpty()) {
+                $depth++;
+                //so we go deep so lets do rate of current ROOM as default rate,
+                //like if we directly set this rate in form
+                $data['rate'] = $rate;
+                foreach ($children as $child) {
+                    switch ($child->formula_type) {
+                        case 'x':
+                            $rate = $data['rate'] * $child->formula_value;
+                            break;
+                        case '+':
+                            $rate = $data['rate'] + $child->formula_value;
+                            break;
+                        case '-':
+                            $rate = $data['rate'] - $child->formula_value;
+                            break;
+                    }
+                    $this->updateChannelRate($child, $property, $data, $rate, $weekDays, $errors, $depth);
+                }
+            }
+        }
     }
 
     /**

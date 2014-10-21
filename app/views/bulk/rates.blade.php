@@ -79,6 +79,7 @@
         @foreach ($rooms as $room)
             <div class="checkbox">
               <label>{{Form::checkbox('rooms[]',$room->id)}}{{{$room->name}}}</label>
+              @include('bulk.children',['currentRoom'=>$room])
             </div>
         @endforeach
   </div>
@@ -95,7 +96,7 @@
 </div>
 
 <br/>
-<button type="button" id="loading-example-btn" data-loading-text="Updating..." class="btn btn-primary">Update</button>
+<button type="button" id="loading-example-btn" data-loading-text="Updating..." class="btn btn-primary btn-default" >Update</button>
 
 {{Form::close()}}
 
