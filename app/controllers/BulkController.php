@@ -57,18 +57,15 @@ class BulkController extends \BaseController
                 $channelSettings = PropertiesChannel::getSettings($mapping->channel_id, $mapping->property_id);
                 $channel = ChannelFactory::create($channelSettings);
                 $channel->setCurrency($property->currency);
-                //TODO Rate plans per room
-                foreach ($mapping->inventory()->plans()->get() as $plan) {
-                    //updating rates
-                    //TODO rewrite to queue
-                    $result = $channel->setRate($plan->inventory_code, $plan->code, $data['from_date'], $data['to_date'], $weekDays, $data['rate']);
-                    if (is_array($result)) {
-                        $formattedErrors = [];
-                        foreach ($result as $error) {
-                            $formattedErrors[] = $channelSettings->channel()->name . ': ' . $error;
-                        }
-                        $errors += $formattedErrors;
+                //updating rates
+                //TODO rewrite to queue
+                $result = $channel->setRate($mapping->inventory_code, $mapping->plan_code, $data['from_date'], $data['to_date'], $weekDays, $data['rate']);
+                if (is_array($result)) {
+                    $formattedErrors = [];
+                    foreach ($result as $error) {
+                        $formattedErrors[] = $channelSettings->channel()->name . ': ' . $error;
                     }
+                    $errors += $formattedErrors;
                 }
 //
             }

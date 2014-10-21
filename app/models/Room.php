@@ -31,7 +31,7 @@ class Room extends \Eloquent
 
     public function mapping($channelId)
     {
-        return $this->hasOne('InventoryMap', 'room_id')->where('channel_id', $channelId)->first();
+        return $this->hasOne('InventoryMap', 'room_id')->where('channel_id', $channelId);
     }
 
     public function mappingList()

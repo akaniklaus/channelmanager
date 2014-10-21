@@ -40,7 +40,12 @@
                 <tr>
                     <td>{{$room->id}}</td>
                     <td>{{$room->name}}</td>
-                    <td>@if($mapping = $room->mapping($channel->id)){{$mapping->name}}@endif</td>
+                    <td>@if($mapping = $room->mapping($channel->id)->get())
+                            @foreach($mapping as $map)
+                                {{$map->name}}: {{$map->plan_name}} ({{$map->plan_code}})  <br/>
+                            @endforeach
+                    @endif
+                    </td>
                     <td>
                     {{link_to_action('RoomsController@getMap','Map',[$room->id,$channel->id])}}
                     </td>
