@@ -29,15 +29,16 @@ class Expedia extends BaseChannel implements IBaseChannel
             'test' => 'https://simulator.expediaquickconnect.com/connect/ar',
             'live' => 'https://ws.expediaquickconnect.com/connect/ar'
         ],
-        'setAvailability' => [
-            'test' => 'https://simulator.expediaquickconnect.com/connect/ar',
-            'live' => 'https://ws.expediaquickconnect.com/connect/ar'
+        'getReservations' => [
+            'test' => 'https://simulator.expediaquickconnect.com/connect/br',
+            'live' => 'https://ws.expediaquickconnect.com/connect/br'
         ]
     ];
 
     protected $ns = [
         'PAR' => 'http://www.expediaconnect.com/EQC/PAR/2013/07',//getInventoryList
-        'AR' => 'http://www.expediaconnect.com/EQC/AR/2011/06'
+        'AR' => 'http://www.expediaconnect.com/EQC/AR/2011/06',//setAvailability
+        'BR' => 'http://www.expediaconnect.com/EQC/BR/2014/01'//getReservations
     ];
 
 
@@ -146,6 +147,23 @@ class Expedia extends BaseChannel implements IBaseChannel
             '</RoomType>' .
             '</AvailRateUpdate>';
         $xml = $this->prepareXml('AvailRateUpdate', $this->ns['AR'], $xml);
+        $result = $this->processCurl($this->getUrl('setRate'), $xml);
+        if ($result['success']) {
+            return true;
+        }
+        return $result['errors'];
+    }
+
+    /**
+     * Pull reservation details
+     * @return mixed
+     */
+    public function getReservations()
+    {
+
+        //property_id:integer, channel_id:integer, reservation_id:string(100), status:string(100), res_created:dateTime, date_arrival:date, date_departure:date, guest_firstname:string(100), guest_lastname:string(100), phone:string(100), email:string(100), guest_count:integer, cc_details:text, comments:text, total:decimal
+
+        $xml = $this->prepareXml('BookingRetrieval', $this->ns['BR']);
         $result = $this->processCurl($this->getUrl(__FUNCTION__), $xml);
         if ($result['success']) {
             return true;
@@ -209,4 +227,5 @@ class Expedia extends BaseChannel implements IBaseChannel
     {
         return $this->auth[$this->getTestMode()][$key];
     }
+
 }

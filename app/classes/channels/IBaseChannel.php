@@ -41,4 +41,10 @@ interface IBaseChannel
      * @return mixed
      */
     public function setAvailability($roomId, $fromDate, $toDate, $days, $availability);
+
+    /**
+     * Pull reservation details
+     * @return mixed
+     */
+    public function getReservations();
 }
