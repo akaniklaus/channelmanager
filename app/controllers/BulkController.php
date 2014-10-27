@@ -11,10 +11,115 @@ class BulkController extends \BaseController
      */
     public function getIndex()
     {
-        //TODO: move to model after finish, rebuild to full ORM
-        $rooms = Room::forBulkUpdate(Property::getLoggedId())->get();
+        $rooms = Room::forBulkRate(Property::getLoggedId())->get();
         return View::make('bulk.rates', compact('rooms'));
     }
+
+    /**
+     * Display a listing of the resource.
+     * GET /bulk
+     *
+     * @return Response
+     */
+    public function getAvailability()
+    {
+        $rooms = Room::forBulkAvailability(Property::getLoggedId())->get();
+        return View::make('bulk.availability', compact('rooms'));
+    }
+
+    public function postUpdateAvailability()
+    {
+        $rules = [
+            'from_date' => 'required|date_format:Y-m-d|after:' . date('Y-m-d', strtotime('yesterday')),
+            'to_date' => 'required|date_format:Y-m-d|after:' . date('Y-m-d', strtotime('yesterday')),
+            'week_day' => 'required',
+            'rooms' => 'required',
+            'availability' => 'required|integer|min:0',
+        ];
+        $validator = Validator::make($data = Input::all(), $rules);
+
+        if ($validator->fails()) {
+            return Response::json([
+                'success' => false,
+                'errors' => $validator->getMessageBag()->toArray()
+            ], 400); //400 - http error code
+        }
+
+        //all ok so get rooms and plans mapping
+
+        $weekDays = ($data['week_day']);
+
+        $errors = [];
+        $property = Property::findOrFail(Property::getLoggedId());
+
+        foreach ($data['rooms'] as $roomId) {
+            //get room data
+            $room = Room::findOrFail($roomId);
+            $depth = 0;
+            $this->updateChannelAvailability($room, $property, $data, $data['availability'], $weekDays, $errors, $depth);
+
+        }
+
+        if (!empty($errors)) {
+            return Response::json([
+                'success' => false,
+                'errors' => $errors
+            ], 400); //400 - http error code
+        }
+
+
+        return Response::json([
+            'success' => true,
+        ], 200); //200 - http success code
+    }
+
+    /**
+     * Recursive function
+     * TODO: move to another place
+     * @param Room $room
+     * @param Property $property
+     * @param $data
+     * @param $availability - rate value for update chanel
+     * @param $weekDays
+     * @param $errors
+     * @param $depth
+     */
+    function updateChannelAvailability($room, $property, $data, $availability, $weekDays, &$errors, &$depth)
+    {
+        Log::info($room->name);
+        if ($depth > 5) {//infinity loop protection
+            return;
+        }
+
+        //get plan mapping
+        $maps = InventoryMap::getByKeys(null, $property->id, $room->id)->distinct()->get('inventory_code');
+        foreach ($maps as $mapping) {
+            //get channel
+            $channelSettings = PropertiesChannel::getSettings($mapping->channel_id, $mapping->property_id);
+            $channel = ChannelFactory::create($channelSettings);
+            $channel->setCurrency($property->currency);
+            //updating rates
+
+//            $result = $channel->setAvailability($mapping->inventory_code, $data['from_date'], $data['to_date'], $weekDays, $availability);
+//            if (is_array($result)) {
+//                $formattedErrors = [];
+//                foreach ($result as $error) {
+//                    $formattedErrors[] = $channelSettings->channel()->name . ': ' . $error;
+//                }
+//                $errors += $formattedErrors;
+//            }
+        }
+        //check if children rooms exist
+        if ($children = $room->plans()->get()) {
+            if (!$children->isEmpty()) {
+                $depth++;
+                foreach ($children as $child) {
+                    $this->updateChannelAvailability($child, $property, $data, $availability, $weekDays, $errors, $depth);
+                }
+            }
+        }
+    }
+
 
     public function postUpdateRates()
     {
@@ -76,7 +181,6 @@ class BulkController extends \BaseController
      */
     function updateChannelRate($room, $property, $data, $rate, $weekDays, &$errors, &$depth)
     {
-        Log::info($room->name);
         if ($depth > 5) {//infinity loop protection
             return;
         }

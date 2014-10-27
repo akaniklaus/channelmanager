@@ -1,6 +1,6 @@
 @extends('layouts.rooms')
 @section('content')
-<h2>Common Rooms</h2>
+<h2>Rooms</h2>
 
 <table class="table">
     <tr>
@@ -23,7 +23,6 @@
         <td>
         {{link_to_action('RoomsController@getEdit','Edit',$room->id)}}
         | {{link_to_action('RoomsController@getDestroy','Delete',$room->id)}}
-
         </td>
     </tr>
 @endforeach

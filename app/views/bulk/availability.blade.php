@@ -2,7 +2,7 @@
 @section('scripts')
 {{ HTML::script('js/bulk/bulk.js') }}
 <script>
-    var BULK_UPDATE_URL = "{{URL::action('BulkController@postUpdateRates')}}"
+    var BULK_UPDATE_URL = "{{URL::action('BulkController@postUpdateAvailability')}}"
 </script>
 @stop
 @section('content')
@@ -57,19 +57,6 @@
           </div>
   </div>
 
-  {{--<div class="col-xs-6 col-md-4 bulk-rate-cat">--}}
-        {{--<label>For one or more of these Rate Categories:</label>--}}
-        {{--<p>--}}
-            {{--<button type="button" class="btn btn-link btn-xs"  onclick="bulkSelectAll('bulk-rate-cat')">Select All</button>--}}
-            {{--<button type="button" class="btn btn-link btn-xs"  onclick="bulkUnSelectAll('bulk-rate-cat')">Unselect All</button>--}}
-        {{--</p>--}}
-        {{--<div class="checkbox">--}}
-          {{--<label>{{Form::checkbox('rate_cats[]',1)}}Standard Rate</label>--}}
-        {{--</div>--}}
-        {{--<div class="checkbox">--}}
-            {{--<label>{{Form::checkbox('rate_cats[]',2)}}Non-refundable</label>--}}
-        {{--</div>--}}
-  {{--</div>--}}
   <div class="col-xs-6 col-md-4 bulk-rooms">
         <label>One or more of these Rooms:</label>
         <p>
@@ -79,18 +66,18 @@
         @foreach ($rooms as $room)
             <div class="checkbox">
               <label>{{Form::checkbox('rooms[]',$room->id)}}{{{$room->name}}}</label>
-              @include('bulk.children',['currentRoom'=>$room])
+              @include('bulk.availability_children',['currentRoom'=>$room])
             </div>
         @endforeach
   </div>
 </div>
 <div class="row">
-    <div class="col-xs-12 col-md-4">
+    <div class="col-xs-12 col-md-8">
         <div class="col-xs-12 col-md-6 ">
-            {{Form::label('rate','Room Rate Per Night:',['class'=>'control-label'])}}
+            {{Form::label('availability','Number of rooms to make available:',['class'=>'control-label'])}}
         </div>
         <div class="col-xs-12 col-md-6">
-         {{Form::text('rate',null,['class'=>'form-control'])}}
+         {{Form::text('availability',null,['class'=>'form-control'])}}
         </div>
     </div>
 </div>

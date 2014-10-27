@@ -19,7 +19,7 @@ $(function () {
             type: 'POST',
             dataType: 'json',
             url: BULK_UPDATE_URL,
-            data: $('#bulk_rates').serialize()
+            data: $('#bulk_form').serialize()
         }).always(function () {
             btn.button('reset')
         }).fail(function (data) {

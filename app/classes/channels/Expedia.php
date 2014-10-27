@@ -23,6 +23,10 @@ class Expedia extends BaseChannel implements IBaseChannel
         'setRate' => [
             'test' => 'https://simulator.expediaquickconnect.com/connect/ar',
             'live' => 'https://ws.expediaquickconnect.com/connect/ar'
+        ],
+        'setAvailability' => [
+            'test' => 'https://simulator.expediaquickconnect.com/connect/ar',
+            'live' => 'https://ws.expediaquickconnect.com/connect/ar'
         ]
     ];
 
@@ -91,6 +95,15 @@ class Expedia extends BaseChannel implements IBaseChannel
         return $daysStr;
     }
 
+    /**
+     * @param string $roomId
+     * @param string $ratePlanId
+     * @param string $fromDate
+     * @param string $toDate
+     * @param array $days
+     * @param float $rate
+     * @return bool|mixed
+     */
     public function setRate($roomId, $ratePlanId, $fromDate, $toDate, $days, $rate)
     {
         $xml = '<AvailRateUpdate>' .
@@ -111,6 +124,29 @@ class Expedia extends BaseChannel implements IBaseChannel
         return $result['errors'];
     }
 
+    /**
+     * @param string $roomId
+     * @param string $fromDate
+     * @param string $toDate
+     * @param array $days
+     * @param int $availability
+     * @return bool|mixed
+     */
+    public function setAvailability($roomId, $fromDate, $toDate, $days, $availability)
+    {
+        $xml = '<AvailRateUpdate>' .
+            '<DateRange from="' . $fromDate . '" to="' . $toDate . '" ' . $this->getWeekDaysStr($days) . '/>' .
+            '<RoomType id="' . $roomId . '">' .
+            '<Inventory totalInventoryAvailable="' . $availability . '"/>' .
+            '</RoomType>' .
+            '</AvailRateUpdate>';
+        $xml = $this->prepareXml('AvailRateUpdate', $this->ns['AR'], $xml);
+        $result = $this->processCurl($this->getUrl(__FUNCTION__), $xml);
+        if ($result['success']) {
+            return true;
+        }
+        return $result['errors'];
+    }
 
     protected function prepareXml($callName, $ns, $xml = "")
     {

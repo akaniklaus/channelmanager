@@ -40,7 +40,8 @@
           <li @if(Request::segment(1)==="properties") class="active" @endif>{{link_to_action('PropertiesController@getIndex','Properties')}}</li>
           <li @if(Request::segment(1)==="channels") class="active" @endif>{{link_to_action('PropertiesChannelsController@getIndex','Channels settings')}}</li>
           <li @if(Request::segment(1)==="rooms") class="active" @endif>{{link_to_action('RoomsController@getIndex','Rooms list')}}</li>
-          <li @if(Request::segment(1)==="bulk") class="active" @endif>{{link_to_action('BulkController@getIndex','Bulk Update')}}</li>
+          <li @if(Request::segment(1)==="bulk"&& Request::segment(2)==="index" ) class="active" @endif>{{link_to_action('BulkController@getIndex','Bulk Rates')}}</li>
+          <li @if(Request::segment(1)==="bulk" && Request::segment(2)==="availability" ) class="active" @endif>{{link_to_action('BulkController@getAvailability','Bulk Availability')}}</li>
         </ul>
     </div>
   </div>
