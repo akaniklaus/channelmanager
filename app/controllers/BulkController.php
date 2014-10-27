@@ -51,7 +51,6 @@ class BulkController extends \BaseController
 
         $errors = [];
         $property = Property::findOrFail(Property::getLoggedId());
-
         foreach ($data['rooms'] as $roomId) {
             //get room data
             $room = Room::findOrFail($roomId);
@@ -86,13 +85,12 @@ class BulkController extends \BaseController
      */
     function updateChannelAvailability($room, $property, $data, $availability, $weekDays, &$errors, &$depth)
     {
-        Log::info($room->name);
+        Log::info($room);
         if ($depth > 5) {//infinity loop protection
             return;
         }
-
         //get plan mapping
-        $maps = InventoryMap::getByKeys(null, $property->id, $room->id)->distinct()->get('inventory_code');
+        $maps = InventoryMap::getByKeys(null, $property->id, $room->id)->distinct()->get(['inventory_code', 'channel_id', 'property_id']);
         foreach ($maps as $mapping) {
             //get channel
             $channelSettings = PropertiesChannel::getSettings($mapping->channel_id, $mapping->property_id);
@@ -100,14 +98,14 @@ class BulkController extends \BaseController
             $channel->setCurrency($property->currency);
             //updating rates
 
-//            $result = $channel->setAvailability($mapping->inventory_code, $data['from_date'], $data['to_date'], $weekDays, $availability);
-//            if (is_array($result)) {
-//                $formattedErrors = [];
-//                foreach ($result as $error) {
-//                    $formattedErrors[] = $channelSettings->channel()->name . ': ' . $error;
-//                }
-//                $errors += $formattedErrors;
-//            }
+            $result = $channel->setAvailability($mapping->inventory_code, $data['from_date'], $data['to_date'], $weekDays, $availability);
+            if (is_array($result)) {
+                $formattedErrors = [];
+                foreach ($result as $error) {
+                    $formattedErrors[] = $channelSettings->channel()->name . ': ' . $error;
+                }
+                $errors += $formattedErrors;
+            }
         }
         //check if children rooms exist
         if ($children = $room->plans()->get()) {

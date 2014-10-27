@@ -1,4 +1,7 @@
 <?php namespace Channels;
+
+use Illuminate\Support\Facades\Log;
+
 /**
  * Class Expedia
  * @package Channels
@@ -13,6 +16,8 @@ class Expedia extends BaseChannel implements IBaseChannel
         ]
     ];
 
+
+    protected $returnWarnings = 1;
     protected $hotelCode;
 
     protected $urls = [
@@ -174,6 +179,10 @@ class Expedia extends BaseChannel implements IBaseChannel
             if ($resultObj->Error) {
                 foreach ($resultObj->Error as $error) {
                     $errors[] = (string)$error;
+                }
+            } elseif ($this->returnWarnings && $resultObj->Success && $resultObj->Success->Warning) {
+                foreach ($resultObj->Success->Warning as $warning) {
+                    $errors[] = 'Warning: ' . (string)$warning;
                 }
             } else {
                 $success = true;
