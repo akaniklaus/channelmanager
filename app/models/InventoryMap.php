@@ -23,6 +23,7 @@
  * @property string $plan_name
  * @method static \Illuminate\Database\Query\Builder|\InventoryMap wherePlanCode($value)
  * @method static \Illuminate\Database\Query\Builder|\InventoryMap wherePlanName($value)
+ * @method static \InventoryMap getMappedRoom($channelId, $propertyId, $inventoryCode, $planCode = null)
  */
 class InventoryMap extends \Eloquent
 {
@@ -73,5 +74,18 @@ class InventoryMap extends \Eloquent
     public function inventory()
     {
         return $this->hasOne('Inventory', 'code', 'inventory_code')->where('channel_id', $this->channel_id)->first();
+    }
+
+    public function scopeGetMappedRoom($query, $channelId, $propertyId, $inventoryCode, $planCode = null)
+    {
+        $params = [
+            'property_id' => $propertyId,
+            'channel_id' => $channelId,
+            'inventory_code' => $inventoryCode
+        ];
+        if ($planCode) {
+            $params['plan_code'] = $planCode;
+        }
+        return $query->where($params);
     }
 }

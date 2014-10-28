@@ -47,4 +47,13 @@ interface IBaseChannel
      * @return mixed
      */
     public function getReservations();
+
+    /**
+     * Confirm channel what we receive reservation
+     * @param int $reservationId
+     * @param string $channelReservationId
+     * @param string $reservationType
+     * @return mixed
+     */
+    public function setReservationConfirmation($reservationId, $channelReservationId, $reservationType);
 }

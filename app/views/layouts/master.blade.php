@@ -42,6 +42,7 @@
           <li @if(Request::segment(1)==="rooms") class="active" @endif>{{link_to_action('RoomsController@getIndex','Rooms list')}}</li>
           <li @if(Request::segment(1)==="bulk"&& Request::segment(2)==="index" ) class="active" @endif>{{link_to_action('BulkController@getIndex','Bulk Rates')}}</li>
           <li @if(Request::segment(1)==="bulk" && Request::segment(2)==="availability" ) class="active" @endif>{{link_to_action('BulkController@getAvailability','Bulk Availability')}}</li>
+          <li @if(Request::segment(1)==="reservations") class="active" @endif>{{link_to_action('ReservationsController@getIndex','Pull Reservations')}}</li>
         </ul>
     </div>
   </div>

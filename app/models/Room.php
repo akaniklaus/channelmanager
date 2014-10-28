@@ -26,6 +26,10 @@
  * @method static \Illuminate\Database\Query\Builder|\Room whereParentId($value)
  * @method static \Illuminate\Database\Query\Builder|\Room whereFormulaType($value)
  * @method static \Illuminate\Database\Query\Builder|\Room whereFormulaValue($value)
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Room[] $children
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Room[] $plans
+ * @method static \Room forBulkRate($propertyId)
+ * @method static \Room forBulkAvailability($propertyId)
  */
 class Room extends \Eloquent
 {
