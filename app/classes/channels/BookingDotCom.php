@@ -186,7 +186,7 @@ class BookingDotCom extends BaseChannel implements IBaseChannel
 
         $xml .= '</room>';
 
-        $xml = $this->prepareXml();
+        $xml = $this->prepareXml($xml);
         $result = $this->processCurl($this->getUrl(__FUNCTION__), $xml);
 
         if ($result['success']) {
