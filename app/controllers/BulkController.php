@@ -188,6 +188,9 @@ class BulkController extends \BaseController
         foreach ($maps as $mapping) {
             //get channel
             $channelSettings = PropertiesChannel::getSettings($mapping->channel_id, $mapping->property_id);
+            if (!$channelSettings) {
+                continue;
+            }
             $channel = ChannelFactory::create($channelSettings);
             $channel->setCurrency($property->currency);
             //updating rates

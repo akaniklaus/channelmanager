@@ -1,7 +1,5 @@
 <?php namespace Channels;
 
-use Illuminate\Support\Facades\Log;
-
 /**
  * Class Expedia
  * @package Channels
@@ -49,7 +47,7 @@ class Expedia extends BaseChannel implements IBaseChannel
 
     public function __construct($channelSettings)
     {
-        $this->setHotelCode($channelSettings->hotel_code);
+        $this->hotelCode = $channelSettings->hotel_code;
     }
 
     /**
@@ -72,7 +70,7 @@ class Expedia extends BaseChannel implements IBaseChannel
             return [];
         }
         $inventories = [];
-        foreach ($result['data']->ProductList->RoomType as $one) {
+        foreach ($result['obj']->ProductList->RoomType as $one) {
             $inventory = [
                 'code' => (string)$one['id'],
                 'name' => (string)$one['name']
@@ -338,11 +336,6 @@ class Expedia extends BaseChannel implements IBaseChannel
             'data' => $result,
             'obj' => $resultObj ? $resultObj : false
         ];
-    }
-
-    public function setHotelCode($hotelCode)
-    {
-        $this->hotelCode = $hotelCode;
     }
 
     protected function getUrl($type)

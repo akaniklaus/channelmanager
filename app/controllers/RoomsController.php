@@ -94,11 +94,12 @@ class RoomsController extends \BaseController
 
         $channelSettings = PropertiesChannel::getSettings($channelId, Property::getLoggedId());
         $channel = ChannelFactory::create($channelSettings);
-//        $result = $channel->getInventoryList();//todo temp
+        $result = $channel->getInventoryList();//todo temp
 //        file_put_contents('1.txt', serialize($result));
-        $result = unserialize(file_get_contents('1.txt'));
-        //add Inventories and Plans to DB//TODO move to another place
+//        $result = unserialize(file_get_contents('1.txt'));
 
+
+        //add Inventories and Plans to DB//TODO move to another place
         //delete exist maps
         Inventory::where([
             'channel_id' => $channelId,
@@ -111,26 +112,29 @@ class RoomsController extends \BaseController
         ])->delete();
 
 
-        foreach ($result as $inventory) {
-            Inventory::create([
-                'code' => $inventory['code'],
-                'name' => $inventory['name'],
-                'channel_id' => $channelId,
-                'property_id' => $channelSettings->property_id,
-            ]);
+        if ($result) {
+            foreach ($result as $inventory) {
+                Inventory::create([
+                    'code' => $inventory['code'],
+                    'name' => $inventory['name'],
+                    'channel_id' => $channelId,
+                    'property_id' => $channelSettings->property_id,
+                ]);
 
-            if ($inventory['plans']) {
-                foreach ($inventory['plans'] as $plan) {
-                    InventoryPlan::create([
-                        'code' => $plan['code'],
-                        'name' => $plan['name'],
-                        'channel_id' => $channelId,
-                        'inventory_code' => $inventory['code'],
-                        'property_id' => $channelSettings->property_id,
-                    ]);
+                if ($inventory['plans']) {
+                    foreach ($inventory['plans'] as $plan) {
+                        InventoryPlan::create([
+                            'code' => $plan['code'],
+                            'name' => $plan['name'],
+                            'channel_id' => $channelId,
+                            'inventory_code' => $inventory['code'],
+                            'property_id' => $channelSettings->property_id,
+                        ]);
+                    }
                 }
             }
         }
+
         $existMapping = [];
 //        $mapCollection = InventoryMap::where(
 //            [

@@ -1,4 +1,7 @@
 <?php namespace Channels;
+
+use Illuminate\Support\Facades\Log;
+
 /**
  * Class BaseChannel
  * @package Channels
