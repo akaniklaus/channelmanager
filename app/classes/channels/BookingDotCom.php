@@ -27,18 +27,10 @@ class BookingDotCom extends BaseChannel implements IBaseChannel
             'test' => 'http://cm.kamer.ngrok.com/simulator/rooms/booking.com',
             'live' => 'https://supply-xml.booking.com/hotels/xml/roomrates'
         ],
-        'setRate' => [
-            'test' => 'https://supply-xml.booking.com/hotels/xml/availability',//TODO add simulator
+        'setRate' => [ //also: setAvailability
+            'test' => 'http://cm.kamer.ngrok.com/simulator/availability/booking.com',
             'live' => 'https://supply-xml.booking.com/hotels/xml/availability'
         ],
-//        'getReservations' => [
-//            'test' => 'https://simulator.expediaquickconnect.com/connect/br',
-//            'live' => 'https://ws.expediaquickconnect.com/connect/br'
-//        ],
-//        'setReservationConfirmation' => [
-//            'test' => 'https://simulator.expediaquickconnect.com/connect/bc',
-//            'live' => 'https://ws.expediaquickconnect.com/connect/bc'
-//        ],
     ];
 
     protected $username = '';//TODO Get it
@@ -217,7 +209,33 @@ class BookingDotCom extends BaseChannel implements IBaseChannel
      */
     public function setAvailability($roomId, $fromDate, $toDate, $days, $availability)
     {
+        $xml = '<room id="' . $roomId . '">';
 
+        $dayXml =
+            '<roomstosell>' . $availability . '</roomstosell>' .
+            '';
+
+        $rightArray = $this->getDatePeriodsForUpdate($fromDate, $toDate, $days);
+
+        foreach ($rightArray as $period) {
+            $lastPeriod = end($period);
+            if ($period[0] === $lastPeriod) {
+                $xml .= '<date value="' . $lastPeriod . '">';
+            } else {
+                $xml .= '<date value1="' . $period[0] . '" value2="' . $lastPeriod . '">';
+            }
+            $xml .= $dayXml . '</date>';
+        }
+
+        $xml .= '</room>';
+
+        $xml = $this->prepareXml($xml);
+        $result = $this->processCurl($this->getUrl('setRates'), $xml);
+
+        if ($result['success']) {
+            return true;
+        }
+        return $result['errors'];
     }
 
     /**

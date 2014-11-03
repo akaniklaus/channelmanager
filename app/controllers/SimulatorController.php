@@ -1,7 +1,32 @@
 <?php
 
+/**
+ * TODO: add negative result cases
+ *
+ * Class SimulatorController
+ */
 class SimulatorController extends \BaseController
 {
+    public function postAvailability($channelName)
+    {
+        return $this->getAvailability($channelName);
+    }
+
+    public function getAvailability($channelName)
+    {
+        $result = '';
+        switch ($channelName) {
+            case 'booking.com':
+                $result = <<<'EOD'
+<?xml version='1.0' standalone='yes'?>
+<ok/><!-- RUID: [UmFuZG9tSVYkc2RlIyh9YQ73DFUUFi6McMhe033LZV4drvQuskco7bV0zLkbkbxM4PPLzEpHagZLvIM5j8tBZw==] -->
+EOD;
+
+                break;
+        }
+
+        return $this->response($result);
+    }
 
     public function postRooms($channelName)
     {
