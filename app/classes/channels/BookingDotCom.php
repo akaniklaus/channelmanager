@@ -124,23 +124,18 @@ class BookingDotCom extends BaseChannel implements IBaseChannel
         return $this->urls[$type][$this->getTestMode()];
     }
 
+
     /**
-     * Set rate on channel
-     *
-     * @param string $roomId
-     * @param string $ratePlanId
-     * @param string $fromDate
-     * @param string $toDate
-     * @param array $days
-     * @param float $rate
-     * @return mixed
+     * Adding  Weekdays support to booking.com
+     * //TODO move outside of booking.com class
+     * @param $fromDate
+     * @param $toDate
+     * @param $days
+     * @return array
      */
-    public function setRate($roomId, $ratePlanId, $fromDate, $toDate, $days, $rate)
+    protected function getDatePeriodsForUpdate($fromDate, $toDate, $days)
     {
         $rightDates = [];
-
-
-        //adding  Weekdays support to booking.com //TODO move outside of booking.com class
         $fromDateTime = strtotime($fromDate);
         $toDateTime = strtotime($toDate);
         while ($fromDateTime <= $toDateTime) {
@@ -163,8 +158,22 @@ class BookingDotCom extends BaseChannel implements IBaseChannel
             }
             $rightArray[$rightArrayCount] [] = $date;
         }
+        return $rightArray;
+    }
 
-
+    /**
+     * Set rate on channel
+     *
+     * @param string $roomId
+     * @param string $ratePlanId
+     * @param string $fromDate
+     * @param string $toDate
+     * @param array $days
+     * @param float $rate
+     * @return mixed
+     */
+    public function setRate($roomId, $ratePlanId, $fromDate, $toDate, $days, $rate)
+    {
         $xml = '<room id="' . $roomId . '">';
 
         $dayXml =
@@ -173,6 +182,7 @@ class BookingDotCom extends BaseChannel implements IBaseChannel
             // '<price1>135.00</price1>' TODO implement in bulk form
             '';
 
+        $rightArray = $this->getDatePeriodsForUpdate($fromDate, $toDate, $days);
 
         foreach ($rightArray as $period) {
             $lastPeriod = end($period);
@@ -193,7 +203,6 @@ class BookingDotCom extends BaseChannel implements IBaseChannel
             return true;
         }
         return $result['errors'];
-
     }
 
     /**
@@ -208,7 +217,7 @@ class BookingDotCom extends BaseChannel implements IBaseChannel
      */
     public function setAvailability($roomId, $fromDate, $toDate, $days, $availability)
     {
-        // TODO: Implement setAvailability() method.
+
     }
 
     /**
