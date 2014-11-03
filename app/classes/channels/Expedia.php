@@ -111,9 +111,10 @@ class Expedia extends BaseChannel implements IBaseChannel
      * @param string $toDate
      * @param array $days
      * @param float $rate
+     * @param float $rate1 - not used here yet //TODO find out && implement
      * @return bool|mixed
      */
-    public function setRate($roomId, $ratePlanId, $fromDate, $toDate, $days, $rate)
+    public function setRate($roomId, $ratePlanId, $fromDate, $toDate, $days, $rate, $rate1 = null)
     {
         $xml = '<AvailRateUpdate>' .
             '<DateRange from="' . $fromDate . '" to="' . $toDate . '" ' . $this->getWeekDaysStr($days) . '/>' .

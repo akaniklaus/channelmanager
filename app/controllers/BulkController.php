@@ -127,6 +127,7 @@ class BulkController extends \BaseController
             'week_day' => 'required',
             'rooms' => 'required',
             'rate' => 'required|numeric|min:0',
+            'single_rate' => 'numeric|min:0'
         ];
         $validator = Validator::make($data = Input::all(), $rules);
 
@@ -195,7 +196,11 @@ class BulkController extends \BaseController
             $channel->setCurrency($property->currency);
             //updating rates
 
-            $result = $channel->setRate($mapping->inventory_code, $mapping->plan_code, $data['from_date'], $data['to_date'], $weekDays, $rate);
+            $result = $channel->setRate(
+                $mapping->inventory_code, $mapping->plan_code,
+                $data['from_date'], $data['to_date'], $weekDays,
+                $rate, isset($data['single_rate']) ? $data['single_rate'] : null
+            );
             if (is_array($result)) {
                 $formattedErrors = [];
                 foreach ($result as $error) {

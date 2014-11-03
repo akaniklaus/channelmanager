@@ -85,11 +85,24 @@
   </div>
 </div>
 <div class="row">
-    <div class="col-xs-12 col-md-4">
-        <div class="col-xs-12 col-md-6 ">
-            {{Form::label('rate','Room Rate Per Night:',['class'=>'control-label'])}}
+    <div class="col-xs-12 col-md-12">
+        <div class="col-xs-12 col-md-3">
+            {{Form::label('rate','Single Use Rate Per Night:',['class'=>'control-label'])}}
+        </div>
+        <div class="col-xs-12 col-md-3">
+         {{Form::text('single_rate',null,['class'=>'form-control'])}}
         </div>
         <div class="col-xs-12 col-md-6">
+             * an empty field will leave values unchanged
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-12 col-md-12">
+        <div class="col-xs-12 col-md-3">
+            {{Form::label('rate','Room Rate Per Night:',['class'=>'control-label'])}}
+        </div>
+        <div class="col-xs-12 col-md-3">
          {{Form::text('rate',null,['class'=>'form-control'])}}
         </div>
     </div>

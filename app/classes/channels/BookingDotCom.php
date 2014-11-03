@@ -162,17 +162,19 @@ class BookingDotCom extends BaseChannel implements IBaseChannel
      * @param string $toDate
      * @param array $days
      * @param float $rate
+     * @param float $rate1
      * @return mixed
      */
-    public function setRate($roomId, $ratePlanId, $fromDate, $toDate, $days, $rate)
+    public function setRate($roomId, $ratePlanId, $fromDate, $toDate, $days, $rate, $rate1 = null)
     {
         $xml = '<room id="' . $roomId . '">';
 
         $dayXml =
             '<rate id="' . $ratePlanId . '"/>' .
-            '<price>' . $rate . '</price>' .
-            // '<price1>135.00</price1>' TODO implement in bulk form
-            '';
+            '<price>' . $rate . '</price>';
+        if ($rate1 && $rate1 > 0) {
+            $dayXml .= '<price1>' . $rate1 . '</price1>';
+        }
 
         $rightArray = $this->getDatePeriodsForUpdate($fromDate, $toDate, $days);
 

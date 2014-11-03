@@ -26,9 +26,10 @@ interface IBaseChannel
      * @param string $toDate
      * @param array $days
      * @param float $rate
+     * @param float $rate1
      * @return mixed
      */
-    public function setRate($roomId, $ratePlanId, $fromDate, $toDate, $days, $rate);
+    public function setRate($roomId, $ratePlanId, $fromDate, $toDate, $days, $rate, $rate1 = null);
 
     /**
      * Set availability on channel
