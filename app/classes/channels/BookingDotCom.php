@@ -33,9 +33,9 @@ class BookingDotCom extends BaseChannel implements IBaseChannel
         ],
         'getReservations' => [
 //            'test' => 'http://cm.kamer.ngrok.com/simulator/reservations/booking.com',
-//            'test' => 'http://cm.kamer.ngrok.com/simulator/reservations/booking.com/confirmation',
+            'test' => 'http://cm.kamer.ngrok.com/simulator/reservations/booking.com/confirmation',
 //            'test' => 'http://cm.kamer.ngrok.com/simulator/reservations/booking.com/modification',
-            'test' => 'http://cm.kamer.ngrok.com/simulator/reservations/booking.com/cancellation',
+//            'test' => 'http://cm.kamer.ngrok.com/simulator/reservations/booking.com/cancellation',
             'live' => 'https://secure-supply-xml.booking.com/hotels/xml/reservations'
         ],
     ];

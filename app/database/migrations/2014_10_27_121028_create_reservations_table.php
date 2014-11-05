@@ -54,7 +54,7 @@ class CreateReservationsTable extends Migration
             $table->timestamp('date_departure');
             $table->tinyInteger('count_adult');
             $table->tinyInteger('count_child');
-            $table->tinyInteger('count_child_age')->nullable();
+            $table->string('child_ages', 100)->nullable();
             $table->string('guest_firstname', 100);
             $table->string('guest_lastname', 100);
             $table->text('comments');

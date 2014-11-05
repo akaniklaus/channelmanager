@@ -25,7 +25,6 @@ class ReservationsController extends \BaseController
             $channel = ChannelFactory::create($channelSettings);
             $result = $channel->getReservations();
             Log::debug($result);
-
             if ($result['reservations']) {
                 foreach ($result['reservations'] as $reservation) {
                     $reservation['channel_id'] = $channelSettings->channel_id;

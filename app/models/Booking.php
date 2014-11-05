@@ -52,7 +52,7 @@ class Booking extends \Eloquent
     protected $fillable = [
         'property_id', 'channel_id', 'room_id', 'reservation_id', 'rr_id', 'guest_firstname', 'guest_lastname',
         'comments', 'inventory', 'plan', 'date_arrival', 'date_departure',
-        'count_adult', 'count_child', 'count_child_age', 'total', 'currency', 'prices'
+        'count_adult', 'count_child', 'child_ages', 'total', 'currency', 'prices'
     ];
 
     /**

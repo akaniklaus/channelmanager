@@ -188,8 +188,8 @@ class Expedia extends BaseChannel implements IBaseChannel
                     $reservation['res_created'] = str_ireplace(['T', 'Z'], [' ', ''], (string)$one['createDateTime']);
                     $reservation['res_source'] = (string)$one['source'];
 
-                    $reservation['guest_firstname'] = (string)$one->PrimaryGuest->Name['givenName'];
-                    $reservation['guest_lastname'] = (string)$one->PrimaryGuest->Name['surname'];
+                    $reservation['buyer_firstname'] = (string)$one->PrimaryGuest->Name['givenName'];
+                    $reservation['buyer_lastname'] = (string)$one->PrimaryGuest->Name['surname'];
                     $reservation['email'] = (string)$one->PrimaryGuest->Email;
 
                     $reservation['phone'] = '';//format 1.111.111-111-111.11
@@ -215,25 +215,24 @@ class Expedia extends BaseChannel implements IBaseChannel
                         $reservation['comments'] = implode(', ', $specials);
                     }
 
+                    if ($one->RewardProgram) {
+                        foreach ($one->RewardProgram as $rwp) {
+                            $reservation['res_loyalty_id'][] = (string)$rwp['code'] . '-' . (string)$rwp['number'];
+                        }
+                        if ($reservation['res_loyalty_id']) {
+                            $reservation['res_loyalty_id'] = implode(', ', $reservation['res_loyalty_id']);
+                        }
 
-                    $stay = $one->RoomStay;
-                    $reservation['res_inventory'] = (string)$stay['roomTypeID'];
-                    $reservation['res_plan'] = (string)$stay['ratePlanID'];
-
-                    $reservation['date_arrival'] = (string)$stay->StayDate['arrival'];
-                    $reservation['date_departure'] = (string)$stay->StayDate['departure'];
-
-                    $reservation['count_adult'] = (int)$stay->GuestCount['adult'];
-                    $reservation['count_child'] = (int)$stay->GuestCount['child'];
-                    if ($reservation['count_child'] && $stay->GuestCount->Child) {
-                        $reservation['count_child_age'] = (int)$stay->GuestCount->Child['age'];
                     }
-
-                    $reservation['total'] = number_format((string)$stay->Total['amountAfterTaxes'], 2);
-                    $reservation['currency'] = (string)$stay->Total['currency'];
-
-                    if ($ccInfo = $stay->PaymentCard) {
-                        $ccTypes = ['AX' => 'American express', 'DS' => 'Discovery card', 'VI' => 'Visa', 'MC' => 'Master card'];
+                    if ($ccInfo = $one->RoomStay->PaymentCard) {
+                        $ccTypes = [
+                            'AX' => 'American Express',
+                            'DS' => 'Discover card',
+                            'VI' => 'Visa',
+                            'MC' => 'MasterCard',
+                            'JC' => 'Japan Credit Bureau',
+                            'DN' => 'Diners Club'
+                        ];
                         $ccType = (string)$ccInfo['cardCode'];
                         $ccType = isset($ccTypes[$ccType]) ? $ccTypes[$ccType] : $ccType;
 
@@ -252,6 +251,43 @@ class Expedia extends BaseChannel implements IBaseChannel
                         $reservation["state"] = (string)$ccInfo->CardHolder['stateProv'];
                     }
 
+                    foreach ($one->RoomStay as $stay) {
+                        $rrRoom = [];
+                        $rrRoom['inventory'] = (string)$stay['roomTypeID'];
+                        $rrRoom['plan'] = (string)$stay['ratePlanID'];
+
+                        $rrRoom['date_arrival'] = (string)$stay->StayDate['arrival'];
+                        $rrRoom['date_departure'] = (string)$stay->StayDate['departure'];
+
+                        $rrRoom['guest_firstname'] = (string)$one->PrimaryGuest->Name['givenName'];
+                        $rrRoom['guest_lastname'] = (string)$one->PrimaryGuest->Name['surname'];
+
+                        $rrRoom['count_adult'] = (int)$stay->GuestCount['adult'];
+                        $rrRoom['count_child'] = (int)$stay->GuestCount['child'];
+                        if ($rrRoom['count_child'] && $stay->GuestCount->Child) {
+                            foreach ($stay->GuestCount->Child as $child) {
+                                $rrRoom['child_ages'][] = (int)$child['age'];
+                            }
+                            if ($rrRoom['child_ages']) {
+                                $rrRoom['child_ages'] = implode(',', $rrRoom['child_ages']);
+                            }
+                        }
+
+                        $rrRoom['total'] = number_format((string)$stay->Total['amountAfterTaxes'], 2);
+                        $rrRoom['currency'] = (string)$stay->Total['currency'];
+
+                        if ($stay->PerDayRates) {
+                            foreach ($stay->PerDayRates->PerDayRate as $price) {
+                                $rrRoom['prices'][] = (string)$price['baseRate'] . '-' . (string)$price['promoName'];
+                            }
+                            if ($rrRoom['prices']) {
+                                $rrRoom['prices'] = implode(',', $rrRoom['prices']);
+                            }
+
+                        }
+
+                        $reservation['rooms'][] = $rrRoom;
+                    }
                     $reservations[] = $reservation;
 
                 }
