@@ -14,6 +14,7 @@ class ReservationsController extends \BaseController
         $execResult = [
             'updated' => 0,
             'created' => 0,
+            'bookings' => 0,
             'cancelled' => 0,
             'not_mapped' => 0
         ];
@@ -41,31 +42,49 @@ class ReservationsController extends \BaseController
                         case 'cancelled':
                             if ($resModel) {
                                 $resModel->status = 'cancelled';
+                                if ($reservation['res_cancel_fee']) {
+                                    $resModel->res_cancel_fee = $reservation['res_cancel_fee'];
+                                }
+                                $resModel->cancelled_at = $resModel->freshTimestamp();
                                 $resModel->save();
                                 $execResult['cancelled']++;
                                 //TODO: send email about cancellation
                             }
                             break;
                         case 'booked':
+                            $needAddRooms = true;
                             if ($resModel) {
                                 if (isset($reservation['modified']) && $reservation['modified']) {
                                     $resModel->update($reservation);
                                     $execResult['updated']++;
+
+                                    $resModel->bookings()->delete();
                                     //TODO: send email about modification
+                                } else {
+                                    $needAddRooms = false;
                                 }
                             } else {
-                                $mapping = InventoryMap::getMappedRoom(
-                                    $channelSettings->channel_id, $channelSettings->property_id,
-                                    $reservation['res_inventory'], isset($reservation['res_plan']) ? $reservation['res_plan'] : null
-                                )->first();
-                                if ($mapping) {
-                                    $reservation['room_id'] = $mapping->room_id;
-                                    $resModel = Reservation::create($reservation);
-                                    $execResult['created']++;
-                                    //TODO: send email about new reservation
-                                } else {
-                                    $execResult['not_mapped']++;
-                                    //TODO: send email about NOT MAPPED ROOM
+                                $resModel = Reservation::create($reservation);
+                                $execResult['created']++;
+                            }
+
+                            if ($reservation['rooms'] && $needAddRooms) {
+                                foreach ($reservation['rooms'] as $room) {
+                                    $room['reservation_id'] = $resModel->id;
+                                    $room['channel_id'] = $reservation['channel_id'];
+                                    $room['property_id'] = $reservation['property_id'];
+                                    $mapping = InventoryMap::getMappedRoom(
+                                        $channelSettings->channel_id, $channelSettings->property_id,
+                                        $room['inventory'], isset($room['plan']) ? $room['plan'] : null
+                                    )->first();
+                                    if ($mapping) {
+                                        $room['room_id'] = $mapping->room_id;
+                                    } else {
+                                        $execResult['not_mapped']++;
+                                        //TODO: send email about NOT MAPPED ROOM
+                                    }
+                                    Booking::create($room);
+                                    $execResult['bookings']++;
                                 }
                             }
                             break;

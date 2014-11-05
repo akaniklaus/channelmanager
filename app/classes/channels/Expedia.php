@@ -167,8 +167,8 @@ class Expedia extends BaseChannel implements IBaseChannel
         $xml = $this->prepareXml('BookingRetrieval', $this->ns['BR']);
         $answer = $this->processCurl($this->getUrl(__FUNCTION__), $xml);
         if ($answer['success']) {
+            $reservations = [];
             if ($answer['obj']) {
-                $reservations = [];
                 foreach ($answer['obj']->Bookings->Booking as $one) {
                     $reservation = [];
                     $reservation['res_id'] = (string)$one['id'];
@@ -241,24 +241,22 @@ class Expedia extends BaseChannel implements IBaseChannel
                             "card_type" => $ccType,
                             "card_number" => (string)$ccInfo['cardNumber'],
                             "card_name" => (string)$ccInfo->CardHolder['name'],
-                            "card_address" => (string)$ccInfo->CardHolder['address'],
-                            "card_city" => (string)$ccInfo->CardHolder['city'],
-                            "card_country" => (string)$ccInfo->CardHolder['country'],
-                            "card_postal_code" => (string)$ccInfo->CardHolder['postalCode'],
-                            "card_state" => (string)$ccInfo->CardHolder['stateProv'],
                             "card_expiry_month" => substr($ccInfo['expireDate'], 0, 2),
                             "card_expiry_year" => substr($ccInfo['expireDate'], 2, 2),
                             "card_cvv" => (string)$ccInfo['seriesCode']
                         ];
+                        $reservation["address"] = (string)$ccInfo->CardHolder['address'];
+                        $reservation["city"] = (string)$ccInfo->CardHolder['city'];
+                        $reservation["country"] = (string)$ccInfo->CardHolder['country'];
+                        $reservation["postal_code"] = (string)$ccInfo->CardHolder['postalCode'];
+                        $reservation["state"] = (string)$ccInfo->CardHolder['stateProv'];
                     }
-
 
                     $reservations[] = $reservation;
 
                 }
-                return compact('reservations');
-
             }
+            return compact('reservations');
         }
         return $answer['errors'];
     }

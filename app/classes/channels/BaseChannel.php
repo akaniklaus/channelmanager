@@ -65,7 +65,10 @@ abstract class BaseChannel
             'Connection: Keep-Alive',
             'Accept-Language: en-us',
             'Accept-Encoding: gzip, deflate',
-            'Content-Type: application/xml'
+            'Content-Type: application/xml',
+            'Cache-Control: no-cache, no-store, must-revalidate',
+            'Pragma: no-cache',
+            'Expires: 0'
         ]);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

@@ -54,13 +54,34 @@
  * @method static \Illuminate\Database\Query\Builder|\Reservation whereCreatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\Reservation whereUpdatedAt($value)
  * @method static \Reservation getByKeys($channelId, $propertyId)
+ * @property string $buyer_firstname
+ * @property string $buyer_lastname
+ * @property string $address
+ * @property string $country
+ * @property string $postal_code
+ * @property string $state
+ * @property float $commission
+ * @property string $res_loyalty_id
+ * @method static \Illuminate\Database\Query\Builder|\Reservation whereBuyerFirstname($value)
+ * @method static \Illuminate\Database\Query\Builder|\Reservation whereBuyerLastname($value)
+ * @method static \Illuminate\Database\Query\Builder|\Reservation whereAddress($value)
+ * @method static \Illuminate\Database\Query\Builder|\Reservation whereCountry($value)
+ * @method static \Illuminate\Database\Query\Builder|\Reservation wherePostalCode($value)
+ * @method static \Illuminate\Database\Query\Builder|\Reservation whereState($value)
+ * @method static \Illuminate\Database\Query\Builder|\Reservation whereCommission($value)
+ * @method static \Illuminate\Database\Query\Builder|\Reservation whereResLoyaltyId($value)
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Booking[] $bookings
+ * @property float $res_cancel_fee
+ * @method static \Illuminate\Database\Query\Builder|\Reservation whereResCancelFee($value)
+ * @property string $cancelled_at
+ * @method static \Illuminate\Database\Query\Builder|\Reservation whereCancelledAt($value)
  */
 class Reservation extends \Eloquent
 {
     protected $fillable = [
-        'property_id', 'channel_id', 'room_id', 'res_id', 'status', 'res_created', 'guest_firstname', 'guest_lastname',
-        'email', 'phone', 'comments', 'res_inventory', 'res_plan', 'date_arrival', 'date_departure',
-        'count_adult', 'count_child', 'count_child_age', 'total', 'currency', 'cc_details', 'modified', 'res_source'
+        'property_id', 'channel_id', 'res_id', 'status', 'res_created', 'buyer_firstname', 'buyer_lastname',
+        'email', 'phone', 'address', 'country', 'postal_code', 'state', 'comments', 'commission',
+        'total', 'currency', 'cc_details', 'modified', 'res_source', 'res_loyalty_id', 'res_cancel_fee'
     ];
 
     /**
@@ -75,5 +96,10 @@ class Reservation extends \Eloquent
             'channel_id' => $channelId,
             'property_id' => $propertyId,
         ]);
+    }
+
+    public function bookings()
+    {
+        return $this->hasMany('Booking', 'reservation_id');
     }
 }
