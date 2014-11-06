@@ -10,7 +10,7 @@
     "require": {
         "laravel/framework": "4.2.*",
         "barryvdh/laravel-ide-helper": "1.*",
-        "barryvdh/laravel-debugbar": "dev-master",
+        "barryvdh/laravel-debugbar": "1.*",
         "doctrine/dbal": "~2.3"
     },
     "autoload": {

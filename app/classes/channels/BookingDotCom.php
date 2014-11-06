@@ -330,8 +330,8 @@ class BookingDotCom extends BaseChannel implements IBaseChannel
                     if ($one->room) {
                         foreach ($one->room as $room) {
                             $rrRoom = [];
-                            $rrRoom['rr_id'] = (string)$room->id;
-                            $rrRoom['inventory'] = (string)$room->roomreservation_id;
+                            $rrRoom['rr_id'] = (string)$room->roomreservation_id;
+                            $rrRoom['inventory'] = (string)$room->id;
                             $rrRoom['plan'] = (string)$room->price['rate_id'];
                             foreach ($room->price as $price) {
                                 $rrRoom['prices'][] = (string)$price;
