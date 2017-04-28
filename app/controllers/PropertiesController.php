@@ -44,7 +44,6 @@ class PropertiesController extends \BaseController
     public function postStore()
     {
         $validator = Validator::make($data = Input::all(), Property::$rules);
-
         if ($validator->fails()) {
             return Redirect::back()->withErrors($validator)->withInput();
         }
