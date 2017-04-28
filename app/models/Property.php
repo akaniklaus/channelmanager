@@ -22,7 +22,8 @@ class Property extends \Eloquent
 
     // Add your validation rules here
     public static $rules = [
-        'name' => 'required', 'currency' => 'required'
+        'name' => 'required', 
+        'currency' => 'required'
     ];
 
     // Don't forget to fill this array
